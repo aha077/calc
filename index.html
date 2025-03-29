@@ -405,7 +405,7 @@
             // Пример данных из ONYX.csv (если файл не загрузится)
             const exampleCSV = `iphone;100000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcacf098664f054fce/b29b8f777cf483f7916d2bfe10bb8241074f98e8f9a7ba4bf623d8efc23a98bf.jpg.webp;11
 samsung;80000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp;11
-xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp;11`;
+xiaomi;50000;https://c.dns-shork.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp;11`;
             
             // Загружаем данные из CSV файла
             loadProductsFromCSV();
@@ -508,9 +508,8 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                     `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.innerHTML='<i class=fas fa-box-open></i>'">` : 
                     '<i class=fas fa-box-open></i>';
                 
-                // Рассчитываем и отображаем первоначальный взнос (18%)
-                const initialPayment = Math.round(product.price * 0.18);
-                initialPaymentDisplay.textContent = `${formatPrice(initialPayment)} ₽`;
+                // Сначала скрываем первоначальный взнос, так как он будет рассчитан после расчета общей суммы
+                initialPaymentDisplay.textContent = 'Будет рассчитан';
                 
                 selectedProductInfo.style.display = 'block';
                 results.style.display = 'none';
@@ -532,12 +531,14 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                 }
                 
                 const productPrice = selectedProduct.price;
-                const initialPayment = Math.round(productPrice * 0.18); // Фиксированный взнос 18%
                 const loanTerm = selectedTerm;
                 const monthlyInterestRate = (selectedProduct.monthlyInterest || 11) / 100; // Процент в месяц
                 
                 // Новая формула расчета: общая сумма = цена товара + (цена товара * процент * срок в месяцах)
                 const totalPayment = productPrice + (productPrice * monthlyInterestRate * loanTerm);
+                
+                // Первоначальный взнос = 18% от общей суммы выплат
+                const initialPayment = Math.round(totalPayment * 0.18);
                 
                 // Еженедельный платеж = (общая сумма - первоначальный взнос) / (срок * 4)
                 const weeklyPayment = (totalPayment - initialPayment) / (loanTerm * 4);
@@ -548,6 +549,9 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                 resultLoanTerm.textContent = `${loanTerm} месяцев`;
                 resultMonthlyPayment.textContent = `${formatPrice(Math.round(weeklyPayment))} ₽`;
                 resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
+                
+                // Обновляем первоначальный взнос в фиксированной информации
+                initialPaymentDisplay.textContent = `${formatPrice(initialPayment)} ₽`;
                 
                 results.style.display = 'block';
             }
