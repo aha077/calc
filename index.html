@@ -234,7 +234,6 @@
             background-color: #f8f9fa;
             border-radius: var(--border-radius);
             padding: 20px;
-            display: none;
         }
 
         .admin-controls {
@@ -393,8 +392,9 @@
             border-left: 4px solid var(--primary-color);
         }
 
-        .show-admin {
-            display: block !important;
+        .admin-section {
+            margin-top: 30px;
+            display: none;
         }
 
         .admin-toggle {
@@ -414,23 +414,19 @@
             z-index: 1000;
         }
 
-        .github-login-form {
+        .auth-section {
             background-color: white;
             padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             max-width: 400px;
-            margin: 0 auto;
+            margin: 0 auto 30px;
         }
 
-        .github-login-form h3 {
+        .auth-section h3 {
             text-align: center;
             margin-bottom: 20px;
             color: var(--primary-color);
-        }
-
-        .github-login-form .form-group {
-            margin-bottom: 15px;
         }
 
         .github-login-btn {
@@ -578,39 +574,37 @@
             </div>
         </div>
 
-        <div class="admin-section" id="adminSection" style="display: none;">
+        <div class="auth-section" id="authSection">
+            <h3><i class="fab fa-github"></i> Авторизация через GitHub</h3>
+            
+            <div class="form-group">
+                <label for="githubUsername">Логин GitHub</label>
+                <input type="text" id="githubUsername" placeholder="Введите ваш логин GitHub">
+            </div>
+            
+            <div class="form-group">
+                <label for="githubToken">Персональный токен</label>
+                <input type="password" id="githubToken" placeholder="Введите ваш токен доступа">
+            </div>
+            
+            <button class="github-login-btn" id="githubLoginBtn">
+                <i class="fab fa-github"></i> Войти через GitHub
+            </button>
+            
+            <div class="demo-creds">
+                <p><strong>Для демонстрации:</strong></p>
+                <p>Логин: demo_admin</p>
+                <p>Токен: demo_token</p>
+            </div>
+        </div>
+
+        <div class="admin-section" id="adminSection">
             <div class="section-title">
                 <i class="fas fa-cog"></i>
                 <h2>Управление товарами</h2>
             </div>
             
-            <div id="authSection">
-                <div class="github-login-form">
-                    <h3><i class="fab fa-github"></i> Авторизация через GitHub</h3>
-                    
-                    <div class="form-group">
-                        <label for="githubUsername">Логин GitHub</label>
-                        <input type="text" id="githubUsername" placeholder="Введите ваш логин GitHub">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="githubToken">Персональный токен</label>
-                        <input type="password" id="githubToken" placeholder="Введите ваш токен доступа">
-                    </div>
-                    
-                    <button class="github-login-btn" id="githubLoginBtn">
-                        <i class="fab fa-github"></i> Войти через GitHub
-                    </button>
-                    
-                    <div class="demo-creds">
-                        <p><strong>Для демонстрации:</strong></p>
-                        <p>Логин: demo_admin</p>
-                        <p>Токен: demo_token</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="admin-panel" id="adminPanel" style="display: none;">
+            <div class="admin-panel" id="adminPanel">
                 <div class="user-info">
                     <img id="userAvatar" class="user-avatar" src="" alt="Аватар">
                     <span id="userName"></span>
@@ -641,7 +635,7 @@
                 
                 <div class="tab-content" id="addTab">
                     <div class="form-group">
-                        <label for="newProductName">Название товара</label>
+                        <label for="newProductName">Название товар</label>
                         <input type="text" id="newProductName" placeholder="Введите название">
                     </div>
                     
@@ -711,7 +705,7 @@
     </div>
 
     <!-- Кнопка для показа/скрытия админки (только для владельца) -->
-    <div class="admin-toggle" id="adminToggle">
+    <div class="admin-toggle" id="adminToggle" style="display: none;">
         <i class="fas fa-cog"></i>
     </div>
 
@@ -806,8 +800,6 @@
                 if (savedUser) {
                     user = JSON.parse(savedUser);
                     showAdminUI();
-                } else {
-                    showLoginUI();
                 }
             }
             
@@ -845,29 +837,38 @@
                 user = null;
                 githubUsername.value = '';
                 githubToken.value = '';
-                showLoginUI();
-                adminToggle.style.display = 'none';
-                adminSection.style.display = 'none';
+                hideAdminUI();
             }
             
             // Показать UI администратора
             function showAdminUI() {
                 authSection.style.display = 'none';
-                adminPanel.style.display = '';
+                adminSection.style.display = 'block';
+                adminToggle.style.display = 'flex';
                 
                 // Устанавливаем демо-аватар и имя
                 userAvatar.src = user.avatar_url || 'https://via.placeholder.com/40';
                 userName.textContent = user.name || user.login;
                 
-                adminToggle.style.display = 'flex';
                 renderProducts();
             }
             
-            // Показать UI входа
-            function showLoginUI() {
-                authSection.style.display = '';
-                adminPanel.style.display = 'none';
+            // Скрыть UI администратора
+            function hideAdminUI() {
+                authSection.style.display = 'block';
+                adminSection.style.display = 'none';
                 adminToggle.style.display = 'none';
+            }
+
+            // Переключение видимости админ панели
+            function toggleAdminPanel() {
+                if (adminSection.style.display === 'none') {
+                    adminSection.style.display = 'block';
+                    adminToggle.innerHTML = '<i class="fas fa-times"></i>';
+                } else {
+                    adminSection.style.display = 'none';
+                    adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
+                }
             }
 
             // Функция инициализации товаров
@@ -1185,26 +1186,7 @@
                 editModal.style.display = 'none';
                 currentProductToEdit = null;
             }
-            
-            // Переключение видимости админ панели
-            function toggleAdminPanel() {
-                if (user) {
-                    if (adminSection.style.display === 'none') {
-                        adminSection.style.display = 'block';
-                        adminToggle.innerHTML = '<i class="fas fa-times"></i>';
-                    } else {
-                        adminSection.style.display = 'none';
-                        adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
-                    }
-                } else {
-                    // Показываем форму авторизации
-                    adminSection.style.display = 'block';
-                    adminPanel.style.display = 'none';
-                    authSection.style.display = '';
-                    adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
-                }
-            }
-            
+
             // Вспомогательные функции
             function saveProductsToLocalStorage() {
                 localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
@@ -1220,19 +1202,7 @@
                     editModal.style.display = 'none';
                     currentProductToEdit = null;
                 }
-                
-                if (e.target === adminSection && adminSection.style.display === 'block') {
-                    adminSection.style.display = 'none';
-                    adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
-                }
             });
-
-            // Показываем кнопку админки для авторизованных пользователей
-            if (user) {
-                adminToggle.style.display = 'flex';
-            } else {
-                adminToggle.style.display = 'none';
-            }
         });
     </script>
 </body>
