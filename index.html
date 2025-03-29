@@ -359,7 +359,7 @@
 
         .tab-content.active {
             display: block;
-}
+        }
 
         .term-options {
             display: flex;
@@ -444,6 +444,20 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -551,7 +565,7 @@
             </div>
         </div>
 
-        <!-- Секция авторизации (упрощенная версия) -->
+        <!-- Секция авторизации -->
         <div class="auth-section" id="authSection">
             <h3><i class="fab fa-github"></i> Войти для управления товарами</h3>
             <p>Авторизуйтесь через GitHub для доступа к панели администратора</p>
@@ -598,7 +612,7 @@
                 
                 <div class="tab-content" id="addTab">
                     <div class="form-group">
-                        <label for="newProductName">Название товар</label>
+                        <label for="newProductName">Название товара</label>
                         <input type="text" id="newProductName" placeholder="Введите название">
                     </div>
                     
@@ -711,7 +725,12 @@
             const logoutBtn = document.getElementById('logoutBtn');
             let currentProductToEdit = null;
             
-            // Проверка авторизации (симуляция)
+            // GitHub OAuth параметры (замените на свои)
+            const GITHUB_CLIENT_ID = 'YOUR_GITHUB_CLIENT_ID';
+            const GITHUB_REDIRECT_URI = 'YOUR_REDIRECT_URI'; // Например: https://yourdomain.com/auth/github/callback
+            const GITHUB_AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI)}&scope=user`;
+            
+            // Проверка авторизации при загрузке
             checkAuth();
             
             // Инициализация данных
@@ -750,39 +769,65 @@
             
             // Функция проверки авторизации
             function checkAuth() {
-                // В реальном приложении здесь должна быть проверка авторизации через GitHub
-                // В демо-версии просто симулируем авторизацию при наличии user в localStorage
-                const savedUser = localStorage.getItem('githubUser');
-                if (savedUser) {
-                    user = JSON.parse(savedUser);
-                    showAdminUI();
+                // Проверяем параметры URL на наличие кода от GitHub
+                const urlParams = new URLSearchParams(window.location.search);
+                const code = urlParams.get('code');
+                
+                if (code) {
+                    // Если есть код, значит мы вернулись с GitHub после авторизации
+                    // В реальном приложении здесь нужно отправить код на сервер для получения токена
+                    // Для демонстрации просто сохраняем код в localStorage
+                    localStorage.setItem('githubCode', code);
+                    
+                    // Удаляем код из URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    // Получаем данные пользователя (в реальном приложении это делается через сервер)
+                    fetchUserData(code);
+                } else {
+                    // Проверяем, есть ли сохраненный пользователь
+                    const savedUser = localStorage.getItem('githubUser');
+                    if (savedUser) {
+                        user = JSON.parse(savedUser);
+                        showAdminUI();
+                    }
                 }
             }
             
-            // Функция входа через GitHub (перенаправление на OAuth)
-            function loginWithGithub() {
-                // В реальном приложении перенаправляем на авторизацию GitHub
-                // например: window.location.href = `https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID&scope=user&redirect_uri=YOUR_REDIRECT_URI`;
+            // Функция для получения данных пользователя (симуляция)
+            async function fetchUserData(code) {
+                // В реальном приложении здесь нужно отправить код на ваш сервер,
+                // который обменяет его на access token GitHub и получит данные пользователя
                 
-                // Для демонстрации создаем тестового пользователя
+                // Для демонстрации просто создаем тестового пользователя
                 const demoUser = {
-                    login: 'demo_admin',
+                    login: 'github_user',
                     avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
-                    name: 'Администратор',
-                    token: 'demo_token'
+                    name: 'GitHub User',
+                    token: 'demo_token_' + Math.random().toString(36).substring(2)
                 };
                 
-                // Сохраняем пользователя (в реальном приложении это делал бы сервер после OAuth)
+                // Сохраняем пользователя
                 localStorage.setItem('githubUser', JSON.stringify(demoUser));
-                
-                // Устанавливаем пользователя и показываем админку
                 user = demoUser;
+                
+                // Показываем админку
                 showAdminUI();
+            }
+            
+            // Функция входа через GitHub
+            function loginWithGithub() {
+                // Показываем индикатор загрузки
+                githubLoginBtn.innerHTML = '<div class="loading"></div> Авторизация...';
+                
+                // Перенаправляем на GitHub OAuth
+                window.location.href = GITHUB_AUTH_URL;
             }
             
             // Функция выхода
             function logout() {
                 localStorage.removeItem('githubUser');
+                localStorage.removeItem('githubCode');
                 user = null;
                 hideAdminUI();
             }
@@ -793,8 +838,10 @@
                 adminSection.style.display = 'block';
                 
                 // Устанавливаем аватар и имя пользователя
-                userAvatar.src = user.avatar_url || 'https://via.placeholder.com/40';
-                userName.textContent = user.name || user.login;
+                if (user) {
+                    userAvatar.src = user.avatar_url || 'https://via.placeholder.com/40';
+                    userName.textContent = user.name || user.login;
+                }
                 
                 renderProducts();
             }
@@ -803,6 +850,7 @@
             function hideAdminUI() {
                 authSection.style.display = 'block';
                 adminSection.style.display = 'none';
+                githubLoginBtn.innerHTML = '<i class="fab fa-github"></i> Войти через GitHub';
             }
 
             // Функция инициализации товаров
@@ -812,13 +860,13 @@
                 if (savedProducts) {
                     products = JSON.parse(savedProducts);
                 } else {
-                    // Иначе создаем демо-товары
+                    // Иначе создаем демо-товары с работающими изображениями
                     products = [
                         {
                             id: 1,
                             name: 'Смартфон Samsung Galaxy',
                             price: 54990,
-                            image: 'https://images.samsung.com/ru/smartphones/galaxy-s23-ultra/images/galaxy-s23-ultra-highlights-colors-mint.jpg',
+                            image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
                             description: 'Флагманский смартфон с лучшей камерой',
                             monthlyInterest: 5
                         },
@@ -826,7 +874,7 @@
                             id: 2,
                             name: 'Ноутбук ASUS ROG',
                             price: 89990,
-                            image: 'https://m.media-amazon.com/images/I/71kMvSZ5AIL._AC_UF1000,1000_QL80_.jpg',
+                            image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
                             description: 'Игровой ноутбук с мощной видеокартой',
                             monthlyInterest: 5
                         },
@@ -842,7 +890,7 @@
                             id: 4,
                             name: 'Холодильник Bosch',
                             price: 75990,
-                            image: 'https://avatars.mds.yandex.net/get-mpic/5236698/img_id2689231238612103695.jpeg/orig',
+                            image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
                             description: 'Двухкамерный холодильник с No Frost',
                             monthlyInterest: 5
                         }
@@ -863,11 +911,15 @@
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
                     productCard.dataset.id = product.id;
+                    
+                    // Исправляем отображение изображений
+                    const imgHtml = product.image ? 
+                        `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
+                        '<i class="fas fa-box-open"></i>';
+                    
                     productCard.innerHTML = `
                         <div class="product-image">
-                            ${product.image ? 
-                                `<img src="${product.image}" alt="${product.name}" onerror="this.parentElement.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
-                                '<i class="fas fa-box-open"></i>'}
+                            ${imgHtml}
                         </div>
                         <div class="product-name">${product.name}</div>
                         <div class="product-price">${formatPrice(product.price)} ₽</div>
@@ -881,11 +933,10 @@
                         const adminCard = document.createElement('div');
                         adminCard.className = 'product-card';
                         adminCard.dataset.id = product.id;
+                        
                         adminCard.innerHTML = `
                             <div class="product-image">
-                                ${product.image ? 
-                                    `<img src="${product.image}" alt="${product.name}" onerror="this.parentElement.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
-                                    '<i class="fas fa-box-open"></i>'}
+                                ${imgHtml}
                             </div>
                             <div class="product-name">${product.name}</div>
                             <div class="product-price">${formatPrice(product.price)} ₽</div>
@@ -938,7 +989,7 @@
                 
                 // Обрабатываем изображение товара
                 selectedProductImage.innerHTML = product.image ? 
-                    `<img src="${product.image}" alt="${product.name}" onerror="this.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
+                    `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
                     '<i class="fas fa-box-open"></i>';
                 
                 // Рассчитываем и отображаем первоначальный взнос (18%)
