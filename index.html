@@ -28,12 +28,12 @@
             background-color: var(--secondary-color);
             color: var(--text-color);
             line-height: 1.6;
+            padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
@@ -44,12 +44,12 @@
         .header h1 {
             color: var(--primary-color);
             margin-bottom: 10px;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
         }
 
         .header p {
             color: var(--light-text);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .calculator-container {
@@ -74,11 +74,11 @@
             gap: 10px;
             color: var(--primary-color);
             margin-bottom: 20px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .section-title i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .product-grid {
@@ -247,6 +247,9 @@
             color: var(--primary-color);
             margin-bottom: 15px;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .result-item {
@@ -318,8 +321,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 6
-        00;
+            font-weight: 600;
             color: var(--text-color);
             font-size: 0.9rem;
         }
@@ -408,6 +410,27 @@
             display: block;
         }
 
+        .payment-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 107, 255, 0.05);
+        }
+
         @media (max-width: 768px) {
             .calculator-container {
                 flex-direction: column;
@@ -419,6 +442,10 @@
             
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .payment-options {
+                flex-direction: column;
             }
         }
     </style>
@@ -460,8 +487,16 @@
                 </div>
                 
                 <div class="input-group">
-                    <label for="initialPayment">Первоначальный взнос (%)</label>
-                    <input type="number" id="initialPayment" min="0" max="100" value="20">
+                    <label>Первоначальный взнос</label>
+                    <div class="payment-options">
+                        <div class="payment-option selected" data-type="percentage" id="percentageOption">Процент от стоимости</div>
+                        <div class="payment-option" data-type="fixed" id="fixedOption">Фиксированная сумма</div>
+                    </div>
+                    <input type="number" id="initialPayment" min="0" value="20">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                        <input type="range" id="initialPaymentRange" min="0" max="100" value="20" style="flex-grow: 1;">
+                        <span id="initialPaymentSuffix">%</span>
+                    </div>
                 </div>
                 
                 <div class="input-group">
@@ -474,7 +509,7 @@
                             <div class="slider-value" id="loanTermValue">12</div>
                         </div>
                         <div class="slider-markers">
-                            <span>1 мес</span>
+                            <span>1</span>
                             <span>12</span>
                             <span>24</span>
                             <span>36</span>
@@ -626,6 +661,7 @@
             let products = [];
             let selectedProduct = null;
             let adminSelectedProducts = [];
+            let isPercentagePayment = true;
             
             // DOM элементы
             const productGrid = document.getElementById('productGrid');
@@ -636,6 +672,10 @@
             const selectedProductImage = document.getElementById('selectedProductImage');
             const selectedProductDisplay = document.getElementById('selectedProductDisplay');
             const initialPaymentInput = document.getElementById('initialPayment');
+            const initialPaymentRange = document.getElementById('initialPaymentRange');
+            const initialPaymentSuffix = document.getElementById('initialPaymentSuffix');
+            const percentageOption = document.getElementById('percentageOption');
+            const fixedOption = document.getElementById('fixedOption');
             const loanTermInput = document.getElementById('loanTerm');
             const loanTermValue = document.getElementById('loanTermValue');
             const loanTermThumb = document.getElementById('loanTermThumb');
@@ -664,8 +704,8 @@
             // Инициализация данных
             initializeProducts();
             
-            // Инициализация слайдера
-            initSlider();
+            // Инициализация слайдера срока кредита
+            initLoanTermSlider();
             
             // Слушатели событий
             calculateBtn.addEventListener('click', calculateLoan);
@@ -674,6 +714,14 @@
             addProductBtn.addEventListener('click', addNewProduct);
             closeModalBtn.addEventListener('click', () => editModal.style.display = 'none');
             saveEditBtn.addEventListener('click', saveProductEdit);
+            
+            // Переключение между процентами и фиксированной суммой
+            percentageOption.addEventListener('click', () => togglePaymentType(true));
+            fixedOption.addEventListener('click', () => togglePaymentType(false));
+            
+            // Обработчики для первоначального взноса
+            initialPaymentInput.addEventListener('input', updateInitialPaymentRange);
+            initialPaymentRange.addEventListener('input', updateInitialPaymentInput);
             
             // Табы в админке
             tabs.forEach(tab => {
@@ -819,6 +867,16 @@
                 selectedProductInfo.style.display = 'block';
                 results.style.display = 'none';
                 
+                // Если выбран фиксированный платеж, обновляем максимум
+                if (!isPercentagePayment) {
+                    initialPaymentInput.max = selectedProduct.price;
+                    if (parseInt(initialPaymentInput.value) > selectedProduct.price) {
+                        initialPaymentInput.value = selectedProduct.price;
+                        initialPaymentRange.value = 100;
+                    }
+                    updateInitialPaymentRange();
+                }
+                
                 // Убираем выделение у всех карточек и выделяем текущую
                 document.querySelectorAll('.product-section .product-card').forEach(card => {
                     card.classList.remove('selected');
@@ -828,61 +886,114 @@
                 if (selectedCard) selectedCard.classList.add('selected');
             }
             
-            // Функция инициализации слайдера
-            function initSlider() {
+            // Функция инициализации слайдера срока кредита
+            function initLoanTermSlider() {
                 const min = parseInt(loanTermInput.min);
                 const max = parseInt(loanTermInput.max);
                 const value = parseInt(loanTermInput.value);
                 
                 function updateSlider() {
-                    const percent = (value - min) / (max - min) * 100;
+                    const percent = (loanTermInput.value - min) / (max - min) * 100;
                     loanTermRange.style.width = `${percent}%`;
                     loanTermThumb.style.left = `${percent}%`;
-                    loanTermValue.textContent = value;
+                    loanTermValue.textContent = loanTermInput.value;
                     loanTermValue.style.left = `${percent}%`;
                 }
                 
                 updateSlider();
                 
                 // Обработчик изменения значения слайдера
-                loanTermInput.addEventListener('input', () => {
-                    const newValue = parseInt(loanTermInput.value);
-                    updateSlider(newValue);
-                });
+                loanTermInput.addEventListener('input', updateSlider);
                 
                 // Обработчик кликов по треку слайдера
                 const sliderContainer = document.querySelector('.slider-container');
                 sliderContainer.addEventListener('click', (e) => {
                     const rect = sliderContainer.getBoundingClientRect();
                     const clickPosition = e.clientX - rect.left;
-                    const clickPercent = (clickPosition / rect.width) * 100;
-                    const newValue = Math.round(min + (max - min) * (clickPercent / 100));
-                    
+                    const newValue = Math.round(min + (max - min) * (clickPosition / rect.width));
                     loanTermInput.value = Math.min(max, Math.max(min, newValue));
                     loanTermInput.dispatchEvent(new Event('input'));
                 });
                 
                 // Обработчик перетаскивания бегунка
+                let isDragging = false;
+                
                 loanTermThumb.addEventListener('mousedown', (e) => {
                     e.preventDefault();
-                    
-                    const rect = sliderContainer.getBoundingClientRect();
-                    const thumbWidth = loanTermThumb.offsetWidth;
-                    
-                    function moveThumb(e) {
-                        let newLeft = (e.clientX - rect.left - thumbWidth / 2) / rect.width * 100;
+                    isDragging = true;
+                    document.body.style.userSelect = 'none';
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (isDragging) {
+                        const rect = sliderContainer.getBoundingClientRect();
+                        let newLeft = (e.clientX - rect.left) / rect.width * 100;
                         newLeft = Math.min(100, Math.max(0, newLeft));
                         
                         const newValue = Math.round(min + (max - min) * (newLeft / 100));
                         loanTermInput.value = newValue;
-                        loanTermInput.dispatchEvent(new Event('input'));
+                        updateSlider();
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    document.body.style.userSelect = '';
+                });
+            }
+            
+            // Переключение между процентами и фиксированной суммой
+            function togglePaymentType(isPercentage) {
+                isPercentagePayment = isPercentage;
+                
+                if (isPercentage) {
+                    percentageOption.classList.add('selected');
+                    fixedOption.classList.remove('selected');
+                    
+                    initialPaymentInput.min = 0;
+                    initialPaymentInput.max = 100;
+                    initialPaymentInput.step = 1;
+                    initialPaymentInput.value = initialPaymentRange.value;
+                    initialPaymentSuffix.textContent = '%';
+                    
+                    initialPaymentRange.style.display = 'block';
+                } else {
+                    percentageOption.classList.remove('selected');
+                    fixedOption.classList.add('selected');
+                    
+                    if (selectedProduct) {
+                        initialPaymentInput.min = 0;
+                        initialPaymentInput.max = selectedProduct.price;
+                        initialPaymentInput.step = 1000;
+                        
+                        // Конвертируем процент в сумму
+                        const paymentAmount = Math.round(selectedProduct.price * (initialPaymentRange.value / 100));
+                        initialPaymentInput.value = Math.min(paymentAmount, selectedProduct.price);
                     }
                     
-                    document.addEventListener('mousemove', moveThumb);
-                    document.addEventListener('mouseup', () => {
-                        document.removeEventListener('mousemove', moveThumb);
-                    }, { once: true });
-                });
+                    initialPaymentSuffix.textContent = '₽';
+                    initialPaymentRange.style.display = 'none';
+                }
+            }
+            
+            // Обновление поля ввода при изменении ползунка
+            function updateInitialPaymentInput() {
+                if (isPercentagePayment) {
+                    initialPaymentInput.value = initialPaymentRange.value;
+                } else if (selectedProduct) {
+                    const paymentAmount = Math.round(selectedProduct.price * (initialPaymentRange.value / 100));
+                    initialPaymentInput.value = Math.min(paymentAmount, selectedProduct.price);
+                }
+            }
+            
+            // Обновление ползунка при изменении поля ввода
+            function updateInitialPaymentRange() {
+                if (isPercentagePayment) {
+                    initialPaymentRange.value = initialPaymentInput.value;
+                } else if (selectedProduct) {
+                    const paymentPercent = (initialPaymentInput.value / selectedProduct.price) * 100;
+                    initialPaymentRange.value = Math.min(100, Math.max(0, paymentPercent));
+                }
             }
             
             // Функция расчета кредита
@@ -893,11 +1004,18 @@
                 }
                 
                 const productPrice = selectedProduct.price;
-                const initialPaymentPercent = parseInt(initialPaymentInput.value);
+                let initialPayment;
+                
+                if (isPercentagePayment) {
+                    const initialPaymentPercent = parseInt(initialPaymentInput.value);
+                    initialPayment = productPrice * (initialPaymentPercent / 100);
+                } else {
+                    initialPayment = parseInt(initialPaymentInput.value);
+                }
+                
                 const loanTerm = parseInt(loanTermInput.value);
                 const interestRate = parseFloat(interestRateInput.value);
                 
-                const initialPayment = productPrice * (initialPaymentPercent / 100);
                 const loanAmount = productPrice - initialPayment;
                 const monthlyRate = interestRate / 100 / 12;
                 
@@ -911,7 +1029,9 @@
                 
                 // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
-                resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽ (${initialPaymentPercent}%)`;
+                resultInitialPayment.textContent = isPercentagePayment 
+                    ? `${formatPrice(initialPayment)} ₽ (${initialPaymentInput.value}%)`
+                    : `${formatPrice(initialPayment)} ₽ (${Math.round(initialPayment / productPrice * 100)}%)`;
                 resultLoanAmount.textContent = `${formatPrice(loanAmount)} ₽`;
                 resultInterestRate.textContent = `${interestRate}% годовых`;
                 resultLoanTerm.textContent = `${loanTerm} месяцев`;
