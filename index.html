@@ -139,8 +139,7 @@
 
         .product-price {
             color: var(--primary-color);
-            font-weight: 7
-00;
+            font-weight: 700;
             font-size: 1.1rem;
         }
 
@@ -554,10 +553,6 @@
                         <span class="result-value" id="resultInitialPayment"></span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Сумма кредита:</span>
-                        <span class="result-value" id="resultLoanAmount"></span>
-                    </div>
-                    <div class="result-item">
                         <span class="result-label">Срок кредита:</span>
                         <span class="result-value" id="resultLoanTerm"></span>
                     </div>
@@ -731,7 +726,6 @@
             const results = document.getElementById('results');
             const resultProductPrice = document.getElementById('resultProductPrice');
             const resultInitialPayment = document.getElementById('resultInitialPayment');
-            const resultLoanAmount = document.getElementById('resultLoanAmount');
             const resultLoanTerm = document.getElementById('resultLoanTerm');
             const resultMonthlyPayment = document.getElementById('resultMonthlyPayment');
             const resultTotalPayment = document.getElementById('resultTotalPayment');
@@ -1012,13 +1006,12 @@
                     (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTerm)) / 
                     (Math.pow(1 + monthlyInterestRate, loanTerm) - 1);
                 
-                // Общая сумма выплат = первоначальный взнос + (ежемесячный платеж * количество месяцев)
-                const totalPayment = initialPayment + (monthlyPayment * loanTerm);
+                // Общая сумма выплат = стоимость товара + (ежемесячный платеж * количество месяцев)
+                const totalPayment = productPrice + (monthlyPayment * loanTerm);
                 
                 // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
                 resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽`;
-                resultLoanAmount.textContent = `${formatPrice(loanAmount)} ₽`;
                 resultLoanTerm.textContent = `${loanTerm} месяцев`;
                 resultMonthlyPayment.textContent = `${formatPrice(Math.round(monthlyPayment))} ₽`;
                 resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
