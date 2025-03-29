@@ -360,7 +360,7 @@
 
         .tab-content.active {
             display: block;
-        }
+}
 
         .term-options {
             display: flex;
@@ -414,18 +414,39 @@
             z-index: 1000;
         }
 
+        .github-login-form {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .github-login-form h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .github-login-form .form-group {
+            margin-bottom: 15px;
+        }
+
         .github-login-btn {
             background-color: #333;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             font-weight: 600;
-            margin-bottom: 20px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .github-login-btn:hover {
@@ -443,6 +464,14 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
+        }
+
+        .demo-creds {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
         }
 
         @media (max-width: 768px) {
@@ -556,10 +585,29 @@
             </div>
             
             <div id="authSection">
-                <p>Для доступа к управлению товарами требуется авторизация через GitHub:</p>
-                <button class="github-login-btn" id="githubLoginBtn">
-                    <i class="fab fa-github"></i> Войти через GitHub
-                </button>
+                <div class="github-login-form">
+                    <h3><i class="fab fa-github"></i> Авторизация через GitHub</h3>
+                    
+                    <div class="form-group">
+                        <label for="githubUsername">Логин GitHub</label>
+                        <input type="text" id="githubUsername" placeholder="Введите ваш логин GitHub">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="githubToken">Персональный токен</label>
+                        <input type="password" id="githubToken" placeholder="Введите ваш токен доступа">
+                    </div>
+                    
+                    <button class="github-login-btn" id="githubLoginBtn">
+                        <i class="fab fa-github"></i> Войти через GitHub
+                    </button>
+                    
+                    <div class="demo-creds">
+                        <p><strong>Для демонстрации:</strong></p>
+                        <p>Логин: demo_admin</p>
+                        <p>Токен: demo_token</p>
+                    </div>
+                </div>
             </div>
             
             <div class="admin-panel" id="adminPanel" style="display: none;">
@@ -645,7 +693,7 @@
                 <label for="editProductImage">Ссылка на изображение</label>
                 <input type="text" id="editProductImage">
             </div>
-            
+                    
             <div class="form-group">
                 <label for="editProductDesc">Описание</label>
                 <input type="text" id="editProductDesc">
@@ -706,6 +754,8 @@
             const adminPanel = document.getElementById('adminPanel');
             const adminToggle = document.getElementById('adminToggle');
             const githubLoginBtn = document.getElementById('githubLoginBtn');
+            const githubUsername = document.getElementById('githubUsername');
+            const githubToken = document.getElementById('githubToken');
             const authSection = document.getElementById('authSection');
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
@@ -763,23 +813,38 @@
             
             // Функция входа через GitHub
             function loginWithGithub() {
-                // В реальном приложении здесь должна быть реализация OAuth
-                // Для демонстрации используем фиктивные данные
-                const demoUser = {
-                    login: 'admin',
-                    avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
-                    name: 'Администратор'
-                };
+                const username = githubUsername.value.trim();
+                const token = githubToken.value.trim();
                 
-                user = demoUser;
-                localStorage.setItem('githubUser', JSON.stringify(user));
-                showAdminUI();
+                if (!username || !token) {
+                    alert('Пожалуйста, введите логин и токен GitHub');
+                    return;
+                }
+                
+                // Демонстрационные данные
+                if (username === 'demo_admin' && token === 'demo_token') {
+                    const demoUser = {
+                        login: 'demo_admin',
+                        avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
+                        name: 'Администратор',
+                        token: 'demo_token'
+                    };
+                    
+                    user = demoUser;
+                    localStorage.setItem('githubUser', JSON.stringify(user));
+                    showAdminUI();
+                } else {
+                    // В реальном приложении здесь должна быть реализация OAuth
+                    alert('В демо-режиме используйте demo_admin / demo_token');
+                }
             }
             
             // Функция выхода
             function logout() {
                 localStorage.removeItem('githubUser');
                 user = null;
+                githubUsername.value = '';
+                githubToken.value = '';
                 showLoginUI();
                 adminToggle.style.display = 'none';
                 adminSection.style.display = 'none';
@@ -789,14 +854,20 @@
             function showAdminUI() {
                 authSection.style.display = 'none';
                 adminPanel.style.display = '';
-                userAvatar.src = user.avatar_url;
+                
+                // Устанавливаем демо-аватар и имя
+                userAvatar.src = user.avatar_url || 'https://via.placeholder.com/40';
                 userName.textContent = user.name || user.login;
+                
+                adminToggle.style.display = 'flex';
+                renderProducts();
             }
             
             // Показать UI входа
             function showLoginUI() {
                 authSection.style.display = '';
                 adminPanel.style.display = 'none';
+                adminToggle.style.display = 'none';
             }
 
             // Функция инициализации товаров
@@ -930,7 +1001,7 @@
                 selectedProductName.textContent = product.name;
                 selectedProductPrice.textContent = `${formatPrice(product.price)} ₽`;
                 
-                // Добавляем изображение, если оно есть
+                // Обрабатываем изображение товара
                 selectedProductImage.innerHTML = product.image ? 
                     `<img src="${product.image}" alt="${product.name}" onerror="this.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
                     '<i class="fas fa-box-open"></i>';
@@ -1126,8 +1197,10 @@
                         adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
                     }
                 } else {
-                    alert('Требуется авторизация');
-                    adminSection.style.display = 'none';
+                    // Показываем форму авторизации
+                    adminSection.style.display = 'block';
+                    adminPanel.style.display = 'none';
+                    authSection.style.display = '';
                     adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
                 }
             }
@@ -1147,11 +1220,18 @@
                     editModal.style.display = 'none';
                     currentProductToEdit = null;
                 }
+                
+                if (e.target === adminSection && adminSection.style.display === 'block') {
+                    adminSection.style.display = 'none';
+                    adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
+                }
             });
 
             // Показываем кнопку админки для авторизованных пользователей
             if (user) {
                 adminToggle.style.display = 'flex';
+            } else {
+                adminToggle.style.display = 'none';
             }
         });
     </script>
