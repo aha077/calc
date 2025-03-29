@@ -222,7 +222,7 @@
         }
 
         .result-value {
-            font-weight: 600;
+            font-weight: 6;
         }
 
         .result-value.total {
@@ -722,15 +722,14 @@
             let isAuthenticated = false;
             
             // Константы для авторизации
-            const CORRECT_LOGIN = 'onyx';
-            const CORRECT_PASSWORD = 'onyx12345';
+            const CORRECT_LOGIN = 'admin';
+            const CORRECT_PASSWORD = 'admin123';
             
-            // Настройки GitHub
+            // Настройки GitHub (замените на свои данные)
             const GITHUB_USERNAME = 'your_github_username';
             const GITHUB_REPO = 'your_repo_name';
-            const GITHUB_TOKEN = 'your_github_token';
-            const DATA_FILE = 'products.json';
-            const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+            const GITHUB_TOKEN = 'your_github_personal_access_token';
+            const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/index.html`;
             
             // DOM элементы
             const productGrid = document.getElementById('productGrid');
@@ -866,44 +865,23 @@
                     if (response.ok) {
                         const data = await response.json();
                         const content = atob(data.content);
-                        products = JSON.parse(content);
+                        
+                        // Парсим HTML и извлекаем данные о товарах
+                        const parser = new DOMParser();
+                        const htmlDoc = parser.parseFromString(content, 'text/html');
+                        const scriptContent = htmlDoc.querySelector('script').textContent;
+                        
+                        // Извлекаем массив products из скрипта
+                        const productsMatch = scriptContent.match(/let products = (\[.*?\])/s);
+                        if (productsMatch && productsMatch[1]) {
+                            products = JSON.parse(productsMatch[1]);
+                        } else {
+                            // Если не удалось извлечь, создаем демо-товары
+                            createDemoProducts();
+                        }
                     } else {
                         // Если файла нет или ошибка, создаем демо-товары
-                        products = [
-                            {
-                                id: 1,
-                                name: 'Смартфон Samsung Galaxy',
-                                price: 54990,
-                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                                description: 'Флагманский смартфон с лучшей камерой',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 2,
-                                name: 'Ноутбук ASUS ROG',
-                                price: 89990,
-                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                                description: 'Игровой ноутбук с мощной видеокартой',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 3,
-                                name: 'Телевизор LG OLED',
-                                price: 129990,
-                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                                description: '4K OLED телевизор с идеальным изображением',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 4,
-                                name: 'Холодильник Bosch',
-                                price: 75990,
-                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                                description: 'Двухкамерный холодильник с No Frost',
-                                monthlyInterest: 11
-                            }
-                        ];
-                        await saveProductsToGitHub();
+                        createDemoProducts();
                     }
                 } catch (error) {
                     console.error('Ошибка загрузки данных:', error);
@@ -913,44 +891,49 @@
                         products = JSON.parse(savedProducts);
                     } else {
                         // Иначе создаем демо-товары
-                        products = [
-                            {
-                                id: 1,
-                                name: 'Смартфон Samsung Galaxy',
-                                price: 54990,
-                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                                description: 'Флагманский смартфон с лучшей камерой',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 2,
-                                name: 'Ноутбук ASUS ROG',
-                                price: 89990,
-                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                                description: 'Игровой ноутбук с мощной видеокартой',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 3,
-                                name: 'Телевизор LG OLED',
-                                price: 129990,
-                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                                description: '4K OLED телевизор с идеальным изображением',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 4,
-                                name: 'Холодильник Bosch',
-                                price: 75990,
-                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                                description: 'Двухкамерный холодильник с No Frost',
-                                monthlyInterest: 11
-                            }
-                        ];
+                        createDemoProducts();
                     }
                 }
                 
                 renderProducts();
+            }
+            
+            // Функция создания демо-товаров
+            function createDemoProducts() {
+                products = [
+                    {
+                        id: 1,
+                        name: 'Смартфон Samsung Galaxy',
+                        price: 54990,
+                        image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
+                        description: 'Флагманский смартфон с лучшей камерой',
+                        monthlyInterest: 11
+                    },
+                    {
+                        id: 2,
+                        name: 'Ноутбук ASUS ROG',
+                        price: 89990,
+                        image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
+                        description: 'Игровой ноутбук с мощной видеокартой',
+                        monthlyInterest: 11
+                    },
+                    {
+                        id: 3,
+                        name: 'Телевизор LG OLED',
+                        price: 129990,
+                        image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
+                        description: '4K OLED телевизор с идеальным изображением',
+                        monthlyInterest: 11
+                    },
+                    {
+                        id: 4,
+                        name: 'Холодильник Bosch',
+                        price: 75990,
+                        image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
+                        description: 'Двухкамерный холодильник с No Frost',
+                        monthlyInterest: 11
+                    }
+                ];
             }
             
             // Функция сохранения товаров в GitHub
@@ -972,10 +955,10 @@
                         sha = data.sha;
                     }
                     
-                    // Обновляем файл
-                    const content = JSON.stringify(products, null, 2);
-                    const base64Content = btoa(unescape(encodeURIComponent(content)));
+                    // Генерируем новый HTML с обновленными данными
+                    const newHtml = generateUpdatedHtml();
                     
+                    // Обновляем файл на GitHub
                     const response = await fetch(GITHUB_API_URL, {
                         method: 'PUT',
                         headers: {
@@ -985,7 +968,7 @@
                         },
                         body: JSON.stringify({
                             message: 'Update products data',
-                            content: base64Content,
+                            content: btoa(unescape(encodeURIComponent(newHtml))),
                             sha: sha
                         })
                     });
@@ -1002,6 +985,32 @@
                     // В случае ошибки сохраняем только локально
                     localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
                 }
+            }
+            
+            // Функция генерации обновленного HTML
+            function generateUpdatedHtml() {
+                // Получаем текущий HTML
+                const currentHtml = document.documentElement.outerHTML;
+                
+                // Находим начало и конец скрипта с данными
+                const scriptStart = currentHtml.indexOf('<script>');
+                const scriptEnd = currentHtml.indexOf('</script>', scriptStart) + 9;
+                
+                // Извлекаем все до скрипта и после
+                const beforeScript = currentHtml.substring(0, scriptStart);
+                const afterScript = currentHtml.substring(scriptEnd);
+                
+                // Создаем новый скрипт с обновленными данными
+                const newScript = `
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            let products = ${JSON.stringify(products, null, 2)};
+                            // Остальной код скрипта...
+                            ${currentHtml.substring(scriptStart + 8, scriptEnd - 9).split('let products =')[1].split('// Остальной код скрипта...')[1]}
+                `;
+                
+                // Собираем новый HTML
+                return beforeScript + newScript + afterScript;
             }
             
             // Функция рендеринга товаров
