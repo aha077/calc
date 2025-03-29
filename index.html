@@ -139,7 +139,8 @@
 
         .product-price {
             color: var(--primary-color);
-            font-weight: 700;
+            font-weight: 7
+00;
             font-size: 1.1rem;
         }
 
@@ -992,7 +993,7 @@
                 if (selectedCard) selectedCard.classList.add('selected');
             }
             
-            // Функция расчета кредита
+            // Функция расчета кредита (исправленная)
             function calculateLoan() {
                 if (!selectedProduct) {
                     alert('Пожалуйста, выберите товар для расчета');
@@ -1011,7 +1012,8 @@
                     (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTerm)) / 
                     (Math.pow(1 + monthlyInterestRate, loanTerm) - 1);
                 
-                const totalPayment = monthlyPayment * loanTerm;
+                // Общая сумма выплат = первоначальный взнос + (ежемесячный платеж * количество месяцев)
+                const totalPayment = initialPayment + (monthlyPayment * loanTerm);
                 
                 // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
