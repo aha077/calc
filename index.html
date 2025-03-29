@@ -150,7 +150,7 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 6;
+            font-weight: 600;
             color: var(--text-color);
         }
 
@@ -177,7 +177,7 @@
             border-radius: var(--border-radius);
             font-size: 1.1rem;
             font-weight: 600;
-            cursor: button;
+            cursor: pointer;
             transition: background-color 0.3s ease;
             margin-top: 10px;
         }
@@ -222,7 +222,7 @@
         }
 
         .result-value {
-            font-weight: 6;
+            font-weight: 600;
         }
 
         .result-value.total {
@@ -359,7 +359,7 @@
 
         .tab-content.active {
             display: block;
-}
+        }
 
         .term-options {
             display: flex;
@@ -715,7 +715,41 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Инициализация переменных
-            let products = [];
+            let products = [
+                {
+                    id: 1,
+                    name: 'Смартфон Samsung Galaxy',
+                    price: 54990,
+                    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
+                    description: 'Флагманский смартфон с лучшей камерой',
+                    monthlyInterest: 11
+                },
+                {
+                    id: 2,
+                    name: 'Ноутбук ASUS ROG',
+                    price: 89990,
+                    image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
+                    description: 'Игровой ноутбук с мощной видеокартой',
+                    monthlyInterest: 11
+                },
+                {
+                    id: 3,
+                    name: 'Телевизор LG OLED',
+                    price: 129990,
+                    image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
+                    description: '4K OLED телевизор с идеальным изображением',
+                    monthlyInterest: 11
+                },
+                {
+                    id: 4,
+                    name: 'Холодильник Bosch',
+                    price: 75990,
+                    image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
+                    description: 'Двухкамерный холодильник с No Frost',
+                    monthlyInterest: 11
+                }
+            ];
+            
             let selectedProduct = null;
             let adminSelectedProducts = [];
             let selectedTerm = 3;
@@ -724,12 +758,6 @@
             // Константы для авторизации
             const CORRECT_LOGIN = 'admin';
             const CORRECT_PASSWORD = 'admin123';
-            
-            // Настройки GitHub (замените на свои данные)
-            const GITHUB_USERNAME = 'your_github_username';
-            const GITHUB_REPO = 'your_repo_name';
-            const GITHUB_TOKEN = 'your_github_personal_access_token';
-            const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/index.html`;
             
             // DOM элементы
             const productGrid = document.getElementById('productGrid');
@@ -770,7 +798,7 @@
             checkAuth();
             
             // Инициализация данных
-            initializeProducts();
+            renderProducts();
             
             // Слушатели событий
             calculateBtn.addEventListener('click', calculateLoan);
@@ -851,168 +879,6 @@
                 adminSection.style.display = 'none';
             }
 
-            // Функция инициализации товаров
-            async function initializeProducts() {
-                try {
-                    // Пытаемся загрузить данные из GitHub
-                    const response = await fetch(GITHUB_API_URL, {
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        const content = atob(data.content);
-                        
-                        // Парсим HTML и извлекаем данные о товарах
-                        const parser = new DOMParser();
-                        const htmlDoc = parser.parseFromString(content, 'text/html');
-                        const scriptContent = htmlDoc.querySelector('script').textContent;
-                        
-                        // Извлекаем массив products из скрипта
-                        const productsMatch = scriptContent.match(/let products = (\[.*?\])/s);
-                        if (productsMatch && productsMatch[1]) {
-                            products = JSON.parse(productsMatch[1]);
-                        } else {
-                            // Если не удалось извлечь, создаем демо-товары
-                            createDemoProducts();
-                        }
-                    } else {
-                        // Если файла нет или ошибка, создаем демо-товары
-                        createDemoProducts();
-                    }
-                } catch (error) {
-                    console.error('Ошибка загрузки данных:', error);
-                    // В случае ошибки используем локальные данные
-                    const savedProducts = localStorage.getItem('creditCalculatorProducts');
-                    if (savedProducts) {
-                        products = JSON.parse(savedProducts);
-                    } else {
-                        // Иначе создаем демо-товары
-                        createDemoProducts();
-                    }
-                }
-                
-                renderProducts();
-            }
-            
-            // Функция создания демо-товаров
-            function createDemoProducts() {
-                products = [
-                    {
-                        id: 1,
-                        name: 'Смартфон Samsung Galaxy',
-                        price: 54990,
-                        image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                        description: 'Флагманский смартфон с лучшей камерой',
-                        monthlyInterest: 11
-                    },
-                    {
-                        id: 2,
-                        name: 'Ноутбук ASUS ROG',
-                        price: 89990,
-                        image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                        description: 'Игровой ноутбук с мощной видеокартой',
-                        monthlyInterest: 11
-                    },
-                    {
-                        id: 3,
-                        name: 'Телевизор LG OLED',
-                        price: 129990,
-                        image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                        description: '4K OLED телевизор с идеальным изображением',
-                        monthlyInterest: 11
-                    },
-                    {
-                        id: 4,
-                        name: 'Холодильник Bosch',
-                        price: 75990,
-                        image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                        description: 'Двухкамерный холодильник с No Frost',
-                        monthlyInterest: 11
-                    }
-                ];
-            }
-            
-            // Функция сохранения товаров в GitHub
-            async function saveProductsToGitHub() {
-                if (!isAuthenticated) return;
-                
-                try {
-                    // Сначала получаем текущий SHA файла (если есть)
-                    let sha = null;
-                    const getResponse = await fetch(GITHUB_API_URL, {
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
-                    
-                    if (getResponse.ok) {
-                        const data = await getResponse.json();
-                        sha = data.sha;
-                    }
-                    
-                    // Генерируем новый HTML с обновленными данными
-                    const newHtml = generateUpdatedHtml();
-                    
-                    // Обновляем файл на GitHub
-                    const response = await fetch(GITHUB_API_URL, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: 'Update products data',
-                            content: btoa(unescape(encodeURIComponent(newHtml))),
-                            sha: sha
-                        })
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Ошибка сохранения данных в GitHub');
-                    }
-                    
-                    // Также сохраняем локально на случай проблем с GitHub
-                    localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
-                    
-                } catch (error) {
-                    console.error('Ошибка сохранения данных:', error);
-                    // В случае ошибки сохраняем только локально
-                    localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
-                }
-            }
-            
-            // Функция генерации обновленного HTML
-            function generateUpdatedHtml() {
-                // Получаем текущий HTML
-                const currentHtml = document.documentElement.outerHTML;
-                
-                // Находим начало и конец скрипта с данными
-                const scriptStart = currentHtml.indexOf('<script>');
-                const scriptEnd = currentHtml.indexOf('</script>', scriptStart) + 9;
-                
-                // Извлекаем все до скрипта и после
-                const beforeScript = currentHtml.substring(0, scriptStart);
-                const afterScript = currentHtml.substring(scriptEnd);
-                
-                // Создаем новый скрипт с обновленными данными
-                const newScript = `
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            let products = ${JSON.stringify(products, null, 2)};
-                            // Остальной код скрипта...
-                            ${currentHtml.substring(scriptStart + 8, scriptEnd - 9).split('let products =')[1].split('// Остальной код скрипта...')[1]}
-                `;
-                
-                // Собираем новый HTML
-                return beforeScript + newScript + afterScript;
-            }
-            
             // Функция рендеринга товаров
             function renderProducts() {
                 productGrid.innerHTML = '';
@@ -1120,7 +986,7 @@
                 if (selectedCard) selectedCard.classList.add('selected');
             }
             
-            // Функция расчета кредита (исправленная)
+            // Функция расчета кредита
             function calculateLoan() {
                 if (!selectedProduct) {
                     alert('Пожалуйста, выберите товар для расчета');
@@ -1157,7 +1023,7 @@
                 adminSelectedProducts = [];
             }
             
-            async function deleteSelectedProducts() {
+            function deleteSelectedProducts() {
                 if (adminSelectedProducts.length === 0) {
                     alert('Выберите товары для удаления');
                     return;
@@ -1166,7 +1032,6 @@
                 if (confirm(`Вы уверены, что хотите удалить ${adminSelectedProducts.length} товаров?`)) {
                     products = products.filter(product => !adminSelectedProducts.includes(product.id));
                     adminSelectedProducts = [];
-                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если удалили выбранный товар, сбрасываем выбор
@@ -1178,10 +1043,9 @@
                 }
             }
             
-            async function deleteProduct(id) {
+            function deleteProduct(id) {
                 if (confirm('Вы уверены, что хотите удалить этот товар?')) {
                     products = products.filter(product => product.id !== id);
-                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если удалили выбранный товар, сбрасываем выбор
@@ -1193,7 +1057,7 @@
                 }
             }
             
-            async function addNewProduct() {
+            function addNewProduct() {
                 const name = document.getElementById('newProductName').value.trim();
                 const price = parseFloat(document.getElementById('newProductPrice').value);
                 const image = document.getElementById('newProductImage').value.trim();
@@ -1218,7 +1082,6 @@
                 };
                 
                 products.push(newProduct);
-                await saveProductsToGitHub();
                 renderProducts();
                 
                 // Очищаем поля формы
@@ -1244,7 +1107,7 @@
                 editModal.style.display = 'flex';
             }
             
-            async function saveProductEdit() {
+            function saveProductEdit() {
                 const name = document.getElementById('editProductName').value.trim();
                 const price = parseFloat(document.getElementById('editProductPrice').value);
                 const image = document.getElementById('editProductImage').value.trim();
@@ -1267,7 +1130,6 @@
                         monthlyInterest
                     };
                     
-                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если редактировали выбранный товар, обновляем его отображение
