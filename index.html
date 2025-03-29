@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> ONYX</title>
+    <title>ONYX - Рассрочка</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -294,7 +294,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-calculator"></i> ONIX</h1>
+            <h1><i class="fas fa-calculator"></i> ONYX</h1>
             <p>Выберите товар и рассчитайте рассрочку на выбранный товар</p>
         </div>
 
@@ -366,7 +366,7 @@
                         <span class="result-value" id="resultLoanTerm"></span>
                     </div>
                     <div class="result-item">
-                        <span class="result-label">Ежемесячный платеж:</span>
+                        <span class="result-label">Еженедельный платеж:</span>
                         <span class="result-value" id="resultMonthlyPayment"></span>
                     </div>
                     <div class="result-item">
@@ -403,9 +403,9 @@
             const resultTotalPayment = document.getElementById('resultTotalPayment');
             
             // Пример данных из ONYX.csv (если файл не загрузится)
-            const exampleCSV = `iphone;100000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcacf098664f054fce/b29b8f777cf483f7916d2bfe10bb8241074f98e8f9a7ba4bf623d8efc23a98bf.jpg.webp
-samsung;80000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp
-xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp`;
+            const exampleCSV = `iphone;100000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcacf098664f054fce/b29b8f777cf483f7916d2bfe10bb8241074f98e8f9a7ba4bf623d8efc23a98bf.jpg.webp;11
+samsung;80000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp;11
+xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp;11`;
             
             // Загружаем данные из CSV файла
             loadProductsFromCSV();
@@ -453,7 +453,7 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                                 name: parts[0].trim(),
                                 price: parseFloat(parts[1].trim()),
                                 image: parts[2].trim(),
-                                monthlyInterest: 11 // Фиксированная ставка 11%
+                                monthlyInterest: parts.length >= 4 ? parseFloat(parts[3].trim()) : 11 // Берем процент из CSV или 11% по умолчанию
                             });
                         }
                     }
@@ -477,10 +477,10 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                     productCard.className = 'product-card';
                     productCard.dataset.id = product.id;
                     
-                    // Исправляем отображение изображений
+                    // Исправляем отображение изображений (убраны лишние символы)
                     const imgHtml = product.image ? 
-                        `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
-                        '<i class="fas fa-box-open"></i>';
+                        `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=fas fa-box-open></i>'">` : 
+                        '<i class=fas fa-box-open></i>';
                     
                     productCard.innerHTML = `
                         <div class="product-image">
@@ -503,10 +503,10 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                 selectedProductName.textContent = product.name;
                 selectedProductPrice.textContent = `${formatPrice(product.price)} ₽`;
                 
-                // Обрабатываем изображение товара
+                // Обрабатываем изображение товара (убраны лишние символы)
                 selectedProductImage.innerHTML = product.image ? 
-                    `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
-                    '<i class="fas fa-box-open"></i>';
+                    `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.innerHTML='<i class=fas fa-box-open></i>'">` : 
+                    '<i class=fas fa-box-open></i>';
                 
                 // Рассчитываем и отображаем первоначальный взнос (18%)
                 const initialPayment = Math.round(product.price * 0.18);
@@ -539,14 +539,14 @@ xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2
                 // Новая формула расчета: общая сумма = цена товара + (цена товара * процент * срок в месяцах)
                 const totalPayment = productPrice + (productPrice * monthlyInterestRate * loanTerm);
                 
-                // Ежемесячный платеж = (общая сумма - первоначальный взнос) / срок
-                const monthlyPayment = (totalPayment - initialPayment) / loanTerm;
+                // Еженедельный платеж = (общая сумма - первоначальный взнос) / (срок * 4)
+                const weeklyPayment = (totalPayment - initialPayment) / (loanTerm * 4);
                 
                 // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
                 resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽`;
                 resultLoanTerm.textContent = `${loanTerm} месяцев`;
-                resultMonthlyPayment.textContent = `${formatPrice(Math.round(monthlyPayment))} ₽`;
+                resultMonthlyPayment.textContent = `${formatPrice(Math.round(weeklyPayment))} ₽`;
                 resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
                 
                 results.style.display = 'block';
