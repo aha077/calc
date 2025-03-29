@@ -397,23 +397,6 @@
             display: none;
         }
 
-        .admin-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
-
         .auth-section {
             background-color: white;
             padding: 25px;
@@ -421,6 +404,7 @@
             box-shadow: var(--shadow);
             max-width: 400px;
             margin: 0 auto 30px;
+            text-align: center;
         }
 
         .auth-section h3 {
@@ -462,14 +446,6 @@
             border-radius: 50%;
         }
 
-        .demo-creds {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-        }
-
         @media (max-width: 768px) {
             .calculator-container {
                 flex-direction: column;
@@ -492,6 +468,7 @@
             <p>Рассчитайте условия кредита на выбранный товар</p>
         </div>
 
+        <!-- Основной функционал калькулятора -->
         <div class="calculator-container">
             <div class="product-section">
                 <div class="section-title">
@@ -574,30 +551,16 @@
             </div>
         </div>
 
+        <!-- Секция авторизации (упрощенная версия) -->
         <div class="auth-section" id="authSection">
-            <h3><i class="fab fa-github"></i> Авторизация через GitHub</h3>
-            
-            <div class="form-group">
-                <label for="githubUsername">Логин GitHub</label>
-                <input type="text" id="githubUsername" placeholder="Введите ваш логин GitHub">
-            </div>
-            
-            <div class="form-group">
-                <label for="githubToken">Персональный токен</label>
-                <input type="password" id="githubToken" placeholder="Введите ваш токен доступа">
-            </div>
-            
+            <h3><i class="fab fa-github"></i> Войти для управления товарами</h3>
+            <p>Авторизуйтесь через GitHub для доступа к панели администратора</p>
             <button class="github-login-btn" id="githubLoginBtn">
                 <i class="fab fa-github"></i> Войти через GitHub
             </button>
-            
-            <div class="demo-creds">
-                <p><strong>Для демонстрации:</strong></p>
-                <p>Логин: demo_admin</p>
-                <p>Токен: demo_token</p>
-            </div>
         </div>
 
+        <!-- Админ панель (скрыта до авторизации) -->
         <div class="admin-section" id="adminSection">
             <div class="section-title">
                 <i class="fas fa-cog"></i>
@@ -704,11 +667,6 @@
         </div>
     </div>
 
-    <!-- Кнопка для показа/скрытия админки (только для владельца) -->
-    <div class="admin-toggle" id="adminToggle" style="display: none;">
-        <i class="fas fa-cog"></i>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Инициализация переменных
@@ -746,17 +704,14 @@
             const tabContents = document.querySelectorAll('.tab-content');
             const adminSection = document.getElementById('adminSection');
             const adminPanel = document.getElementById('adminPanel');
-            const adminToggle = document.getElementById('adminToggle');
             const githubLoginBtn = document.getElementById('githubLoginBtn');
-            const githubUsername = document.getElementById('githubUsername');
-            const githubToken = document.getElementById('githubToken');
             const authSection = document.getElementById('authSection');
             const userAvatar = document.getElementById('userAvatar');
             const userName = document.getElementById('userName');
             const logoutBtn = document.getElementById('logoutBtn');
             let currentProductToEdit = null;
             
-            // Проверка авторизации
+            // Проверка авторизации (симуляция)
             checkAuth();
             
             // Инициализация данных
@@ -769,7 +724,6 @@
             addProductBtn.addEventListener('click', addNewProduct);
             closeModalBtn.addEventListener('click', () => editModal.style.display = 'none');
             saveEditBtn.addEventListener('click', saveProductEdit);
-            adminToggle.addEventListener('click', toggleAdminPanel);
             githubLoginBtn.addEventListener('click', loginWithGithub);
             logoutBtn.addEventListener('click', logout);
             
@@ -796,6 +750,8 @@
             
             // Функция проверки авторизации
             function checkAuth() {
+                // В реальном приложении здесь должна быть проверка авторизации через GitHub
+                // В демо-версии просто симулируем авторизацию при наличии user в localStorage
                 const savedUser = localStorage.getItem('githubUser');
                 if (savedUser) {
                     user = JSON.parse(savedUser);
@@ -803,40 +759,31 @@
                 }
             }
             
-            // Функция входа через GitHub
+            // Функция входа через GitHub (перенаправление на OAuth)
             function loginWithGithub() {
-                const username = githubUsername.value.trim();
-                const token = githubToken.value.trim();
+                // В реальном приложении перенаправляем на авторизацию GitHub
+                // например: window.location.href = `https://github.com/login/oauth/authorize?client_id=YOUR_CLIENT_ID&scope=user&redirect_uri=YOUR_REDIRECT_URI`;
                 
-                if (!username || !token) {
-                    alert('Пожалуйста, введите логин и токен GitHub');
-                    return;
-                }
+                // Для демонстрации создаем тестового пользователя
+                const demoUser = {
+                    login: 'demo_admin',
+                    avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
+                    name: 'Администратор',
+                    token: 'demo_token'
+                };
                 
-                // Демонстрационные данные
-                if (username === 'demo_admin' && token === 'demo_token') {
-                    const demoUser = {
-                        login: 'demo_admin',
-                        avatar_url: 'https://avatars.githubusercontent.com/u/583231?v=4',
-                        name: 'Администратор',
-                        token: 'demo_token'
-                    };
-                    
-                    user = demoUser;
-                    localStorage.setItem('githubUser', JSON.stringify(user));
-                    showAdminUI();
-                } else {
-                    // В реальном приложении здесь должна быть реализация OAuth
-                    alert('В демо-режиме используйте demo_admin / demo_token');
-                }
+                // Сохраняем пользователя (в реальном приложении это делал бы сервер после OAuth)
+                localStorage.setItem('githubUser', JSON.stringify(demoUser));
+                
+                // Устанавливаем пользователя и показываем админку
+                user = demoUser;
+                showAdminUI();
             }
             
             // Функция выхода
             function logout() {
                 localStorage.removeItem('githubUser');
                 user = null;
-                githubUsername.value = '';
-                githubToken.value = '';
                 hideAdminUI();
             }
             
@@ -844,9 +791,8 @@
             function showAdminUI() {
                 authSection.style.display = 'none';
                 adminSection.style.display = 'block';
-                adminToggle.style.display = 'flex';
                 
-                // Устанавливаем демо-аватар и имя
+                // Устанавливаем аватар и имя пользователя
                 userAvatar.src = user.avatar_url || 'https://via.placeholder.com/40';
                 userName.textContent = user.name || user.login;
                 
@@ -857,18 +803,6 @@
             function hideAdminUI() {
                 authSection.style.display = 'block';
                 adminSection.style.display = 'none';
-                adminToggle.style.display = 'none';
-            }
-
-            // Переключение видимости админ панели
-            function toggleAdminPanel() {
-                if (adminSection.style.display === 'none') {
-                    adminSection.style.display = 'block';
-                    adminToggle.innerHTML = '<i class="fas fa-times"></i>';
-                } else {
-                    adminSection.style.display = 'none';
-                    adminToggle.innerHTML = '<i class="fas fa-cog"></i>';
-                }
             }
 
             // Функция инициализации товаров
