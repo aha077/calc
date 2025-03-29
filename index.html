@@ -150,7 +150,7 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: 6;
             color: var(--text-color);
         }
 
@@ -359,7 +359,7 @@
 
         .tab-content.active {
             display: block;
-        }
+}
 
         .term-options {
             display: flex;
@@ -461,6 +461,15 @@
             margin-top: 10px;
             font-size: 0.9rem;
             display: none;
+        }
+
+        .github-info {
+            background-color: rgba(74, 107, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--light-text);
         }
 
         @keyframes spin {
@@ -651,12 +660,16 @@
                     
                     <div class="form-group">
                         <label for="newProductInterest">Процентная ставка (%)</label>
-                        <input type="number" id="newProductInterest" placeholder="Процент в месяц" value="5">
+                        <input type="number" id="newProductInterest" placeholder="Процент в месяц" value="11">
                     </div>
                     
                     <button class="admin-btn" id="addProductBtn">
                         <i class="fas fa-plus"></i> Добавить товар
                     </button>
+
+                    <div class="github-info">
+                        <i class="fab fa-github"></i> Данные сохраняются в репозитории GitHub
+                    </div>
                 </div>
             </div>
         </div>
@@ -711,6 +724,13 @@
             // Константы для авторизации
             const CORRECT_LOGIN = 'onyx';
             const CORRECT_PASSWORD = 'onyx12345';
+            
+            // Настройки GitHub
+            const GITHUB_USERNAME = 'your_github_username';
+            const GITHUB_REPO = 'your_repo_name';
+            const GITHUB_TOKEN = 'your_github_token';
+            const DATA_FILE = 'products.json';
+            const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${DATA_FILE}`;
             
             // DOM элементы
             const productGrid = document.getElementById('productGrid');
@@ -833,51 +853,155 @@
             }
 
             // Функция инициализации товаров
-            function initializeProducts() {
-                // Если в localStorage есть товары, загружаем их
-                const savedProducts = localStorage.getItem('creditCalculatorProducts');
-                if (savedProducts) {
-                    products = JSON.parse(savedProducts);
-                } else {
-                    // Иначе создаем демо-товары с работающими изображениями
-                    products = [
-                        {
-                            id: 1,
-                            name: 'Смартфон Samsung Galaxy',
-                            price: 54990,
-                            image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                            description: 'Флагманский смартфон с лучшей камерой',
-                            monthlyInterest: 5
-                        },
-                        {
-                            id: 2,
-                            name: 'Ноутбук ASUS ROG',
-                            price: 89990,
-                            image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                            description: 'Игровой ноутбук с мощной видеокартой',
-                            monthlyInterest: 5
-                        },
-                        {
-                            id: 3,
-                            name: 'Телевизор LG OLED',
-                            price: 129990,
-                            image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                            description: '4K OLED телевизор с идеальным изображением',
-                            monthlyInterest: 5
-                        },
-                        {
-                            id: 4,
-                            name: 'Холодильник Bosch',
-                            price: 75990,
-                            image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                            description: 'Двухкамерный холодильник с No Frost',
-                            monthlyInterest: 5
+            async function initializeProducts() {
+                try {
+                    // Пытаемся загрузить данные из GitHub
+                    const response = await fetch(GITHUB_API_URL, {
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json'
                         }
-                    ];
-                    saveProductsToLocalStorage();
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const content = atob(data.content);
+                        products = JSON.parse(content);
+                    } else {
+                        // Если файла нет или ошибка, создаем демо-товары
+                        products = [
+                            {
+                                id: 1,
+                                name: 'Смартфон Samsung Galaxy',
+                                price: 54990,
+                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
+                                description: 'Флагманский смартфон с лучшей камерой',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 2,
+                                name: 'Ноутбук ASUS ROG',
+                                price: 89990,
+                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
+                                description: 'Игровой ноутбук с мощной видеокартой',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 3,
+                                name: 'Телевизор LG OLED',
+                                price: 129990,
+                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
+                                description: '4K OLED телевизор с идеальным изображением',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 4,
+                                name: 'Холодильник Bosch',
+                                price: 75990,
+                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
+                                description: 'Двухкамерный холодильник с No Frost',
+                                monthlyInterest: 11
+                            }
+                        ];
+                        await saveProductsToGitHub();
+                    }
+                } catch (error) {
+                    console.error('Ошибка загрузки данных:', error);
+                    // В случае ошибки используем локальные данные
+                    const savedProducts = localStorage.getItem('creditCalculatorProducts');
+                    if (savedProducts) {
+                        products = JSON.parse(savedProducts);
+                    } else {
+                        // Иначе создаем демо-товары
+                        products = [
+                            {
+                                id: 1,
+                                name: 'Смартфон Samsung Galaxy',
+                                price: 54990,
+                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
+                                description: 'Флагманский смартфон с лучшей камерой',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 2,
+                                name: 'Ноутбук ASUS ROG',
+                                price: 89990,
+                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
+                                description: 'Игровой ноутбук с мощной видеокартой',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 3,
+                                name: 'Телевизор LG OLED',
+                                price: 129990,
+                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
+                                description: '4K OLED телевизор с идеальным изображением',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 4,
+                                name: 'Холодильник Bosch',
+                                price: 75990,
+                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
+                                description: 'Двухкамерный холодильник с No Frost',
+                                monthlyInterest: 11
+                            }
+                        ];
+                    }
                 }
                 
                 renderProducts();
+            }
+            
+            // Функция сохранения товаров в GitHub
+            async function saveProductsToGitHub() {
+                if (!isAuthenticated) return;
+                
+                try {
+                    // Сначала получаем текущий SHA файла (если есть)
+                    let sha = null;
+                    const getResponse = await fetch(GITHUB_API_URL, {
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (getResponse.ok) {
+                        const data = await getResponse.json();
+                        sha = data.sha;
+                    }
+                    
+                    // Обновляем файл
+                    const content = JSON.stringify(products, null, 2);
+                    const base64Content = btoa(unescape(encodeURIComponent(content)));
+                    
+                    const response = await fetch(GITHUB_API_URL, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'Update products data',
+                            content: base64Content,
+                            sha: sha
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Ошибка сохранения данных в GitHub');
+                    }
+                    
+                    // Также сохраняем локально на случай проблем с GitHub
+                    localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
+                    
+                } catch (error) {
+                    console.error('Ошибка сохранения данных:', error);
+                    // В случае ошибки сохраняем только локально
+                    localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
+                }
             }
             
             // Функция рендеринга товаров
@@ -997,17 +1121,13 @@
                 const productPrice = selectedProduct.price;
                 const initialPayment = Math.round(productPrice * 0.18); // Фиксированный взнос 18%
                 const loanTerm = selectedTerm;
-                const monthlyInterestRate = (selectedProduct.monthlyInterest || 5) / 100; // Процент в месяц
+                const monthlyInterestRate = (selectedProduct.monthlyInterest || 11) / 100; // Процент в месяц
                 
-                const loanAmount = productPrice - initialPayment;
+                // Новая формула расчета: общая сумма = цена товара + (цена товара * процент * срок в месяцах)
+                const totalPayment = productPrice + (productPrice * monthlyInterestRate * loanTerm);
                 
-                // Формула аннуитетного платежа с месячным процентом
-                const monthlyPayment = loanAmount * 
-                    (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, loanTerm)) / 
-                    (Math.pow(1 + monthlyInterestRate, loanTerm) - 1);
-                
-                // Общая сумма выплат = стоимость товара + (ежемесячный платеж * количество месяцев)
-                const totalPayment = productPrice + (monthlyPayment * loanTerm);
+                // Ежемесячный платеж = (общая сумма - первоначальный взнос) / срок
+                const monthlyPayment = (totalPayment - initialPayment) / loanTerm;
                 
                 // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
@@ -1028,7 +1148,7 @@
                 adminSelectedProducts = [];
             }
             
-            function deleteSelectedProducts() {
+            async function deleteSelectedProducts() {
                 if (adminSelectedProducts.length === 0) {
                     alert('Выберите товары для удаления');
                     return;
@@ -1037,7 +1157,7 @@
                 if (confirm(`Вы уверены, что хотите удалить ${adminSelectedProducts.length} товаров?`)) {
                     products = products.filter(product => !adminSelectedProducts.includes(product.id));
                     adminSelectedProducts = [];
-                    saveProductsToLocalStorage();
+                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если удалили выбранный товар, сбрасываем выбор
@@ -1049,10 +1169,10 @@
                 }
             }
             
-            function deleteProduct(id) {
+            async function deleteProduct(id) {
                 if (confirm('Вы уверены, что хотите удалить этот товар?')) {
                     products = products.filter(product => product.id !== id);
-                    saveProductsToLocalStorage();
+                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если удалили выбранный товар, сбрасываем выбор
@@ -1064,12 +1184,12 @@
                 }
             }
             
-            function addNewProduct() {
+            async function addNewProduct() {
                 const name = document.getElementById('newProductName').value.trim();
                 const price = parseFloat(document.getElementById('newProductPrice').value);
                 const image = document.getElementById('newProductImage').value.trim();
                 const description = document.getElementById('newProductDesc').value.trim();
-                const monthlyInterest = parseFloat(document.getElementById('newProductInterest').value) || 5;
+                const monthlyInterest = parseFloat(document.getElementById('newProductInterest').value) || 11;
                 
                 if (!name || isNaN(price) || price <= 0) {
                     alert('Пожалуйста, заполните название товара и укажите корректную цену');
@@ -1089,7 +1209,7 @@
                 };
                 
                 products.push(newProduct);
-                saveProductsToLocalStorage();
+                await saveProductsToGitHub();
                 renderProducts();
                 
                 // Очищаем поля формы
@@ -1110,17 +1230,17 @@
                 document.getElementById('editProductPrice').value = product.price;
                 document.getElementById('editProductImage').value = product.image || '';
                 document.getElementById('editProductDesc').value = product.description || '';
-                document.getElementById('editProductInterest').value = product.monthlyInterest || 5;
+                document.getElementById('editProductInterest').value = product.monthlyInterest || 11;
                 
                 editModal.style.display = 'flex';
             }
             
-            function saveProductEdit() {
+            async function saveProductEdit() {
                 const name = document.getElementById('editProductName').value.trim();
                 const price = parseFloat(document.getElementById('editProductPrice').value);
                 const image = document.getElementById('editProductImage').value.trim();
                 const description = document.getElementById('editProductDesc').value.trim();
-                const monthlyInterest = parseFloat(document.getElementById('editProductInterest').value) || 5;
+                const monthlyInterest = parseFloat(document.getElementById('editProductInterest').value) || 11;
                 
                 if (!name || isNaN(price) || price <= 0) {
                     alert('Пожалуйста, заполните название товара и укажите корректную цену');
@@ -1138,7 +1258,7 @@
                         monthlyInterest
                     };
                     
-                    saveProductsToLocalStorage();
+                    await saveProductsToGitHub();
                     renderProducts();
                     
                     // Если редактировали выбранный товар, обновляем его отображение
@@ -1152,10 +1272,6 @@
             }
 
             // Вспомогательные функции
-            function saveProductsToLocalStorage() {
-                localStorage.setItem('creditCalculatorProducts', JSON.stringify(products));
-            }
-            
             function formatPrice(price) {
                 return new Intl.NumberFormat('ru-RU').format(Math.round(price));
             }
