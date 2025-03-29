@@ -230,137 +230,6 @@
             font-size: 1.2rem;
         }
 
-        .admin-panel {
-            background-color: #f8f9fa;
-            border-radius: var(--border-radius);
-            padding: 20px;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .admin-btn {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        .admin-btn.danger {
-            background-color: #ff4444;
-        }
-
-        .admin-btn:hover {
-            opacity: 0.9;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-color);
-            font-size: 0.9rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: white;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            width: 100%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-            position: relative;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--light-text);
-        }
-
-        .save-btn {
-            margin-top: 20px;
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .save-btn:hover {
-            background-color: #3a5bd9;
-        }
-
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            font-weight: 600;
-            color: var(--light-text);
-        }
-
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
         .term-options {
             display: flex;
             gap: 10px;
@@ -392,84 +261,15 @@
             border-left: 4px solid var(--primary-color);
         }
 
-        .admin-section {
-            margin-top: 30px;
-            display: none;
-        }
-
-        .auth-section {
-            background-color: white;
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            max-width: 400px;
-            margin: 0 auto 30px;
-            text-align: center;
-        }
-
-        .auth-section h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-
-        .login-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .login-btn:hover {
-            background-color: #3a5bd9;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-
         .loading {
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            border: 3px solid rgba(74, 107, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #fff;
+            border-top-color: var(--primary-color);
             animation: spin 1s ease-in-out infinite;
-        }
-
-        .error-message {
-            color: #ff4444;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .github-info {
-            background-color: rgba(74, 107, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: var(--light-text);
+            margin: 20px auto;
         }
 
         @keyframes spin {
@@ -507,7 +307,7 @@
                 </div>
                 
                 <div class="product-grid" id="productGrid">
-                    <!-- Товары будут добавлены через JavaScript -->
+                    <div class="loading"></div>
                 </div>
             </div>
 
@@ -576,192 +376,17 @@
                 </div>
             </div>
         </div>
-
-        <!-- Секция авторизации -->
-        <div class="auth-section" id="authSection">
-            <h3><i class="fas fa-lock"></i> Вход для администратора</h3>
-            <p>Введите логин и пароль для доступа к панели управления</p>
-            
-            <div class="form-group">
-                <label for="loginInput">Логин</label>
-                <input type="text" id="loginInput" placeholder="Введите логин">
-            </div>
-            
-            <div class="form-group">
-                <label for="passwordInput">Пароль</label>
-                <input type="password" id="passwordInput" placeholder="Введите пароль">
-            </div>
-            
-            <div class="error-message" id="errorMessage">
-                Неверный логин или пароль
-            </div>
-            
-            <button class="login-btn" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Войти
-            </button>
-        </div>
-
-        <!-- Админ панель (скрыта до авторизации) -->
-        <div class="admin-section" id="adminSection">
-            <div class="section-title">
-                <i class="fas fa-cog"></i>
-                <h2>Управление товарами</h2>
-            </div>
-            
-            <div class="admin-panel" id="adminPanel">
-                <div class="user-info">
-                    <i class="fas fa-user-circle user-avatar"></i>
-                    <span id="userName">Администратор</span>
-                    <button class="admin-btn danger" id="logoutBtn" style="margin-left: auto;">
-                        <i class="fas fa-sign-out-alt"></i> Выйти
-                    </button>
-                </div>
-                
-                <div class="tabs">
-                    <div class="tab active" data-tab="products">Товары</div>
-                    <div class="tab" data-tab="add">Добавить товар</div>
-                </div>
-                
-                <div class="tab-content active" id="productsTab">
-                    <div class="admin-controls">
-                        <button class="admin-btn" id="refreshProducts">
-                            <i class="fas fa-sync-alt"></i> Обновить список
-                        </button>
-                        <button class="admin-btn danger" id="deleteSelected">
-                            <i class="fas fa-trash"></i> Удалить выбранное
-                        </button>
-                    </div>
-                    
-                    <div class="product-grid" id="adminProductGrid">
-                        <!-- Админская версия товаров будет добавлена через JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="addTab">
-                    <div class="form-group">
-                        <label for="newProductName">Название товара</label>
-                        <input type="text" id="newProductName" placeholder="Введите название">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="newProductPrice">Цена (руб)</label>
-                        <input type="number" id="newProductPrice" placeholder="Введите цену">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="newProductImage">Ссылка на изображение</label>
-                        <input type="text" id="newProductImage" placeholder="Введите URL изображения">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="newProductDesc">Описание</label>
-                        <input type="text" id="newProductDesc" placeholder="Введите описание">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="newProductInterest">Процентная ставка (%)</label>
-                        <input type="number" id="newProductInterest" placeholder="Процент в месяц" value="11">
-                    </div>
-                    
-                    <button class="admin-btn" id="addProductBtn">
-                        <i class="fas fa-plus"></i> Добавить товар
-                    </button>
-
-                    <div class="github-info">
-                        <i class="fab fa-github"></i> Данные сохраняются в репозитории GitHub
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модальное окно для редактирования товара -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>Редактировать товар</h3>
-            
-            <div class="form-group">
-                <label for="editProductName">Название товара</label>
-                <input type="text" id="editProductName">
-            </div>
-            
-            <div class="form-group">
-                <label for="editProductPrice">Цена (руб)</label>
-                <input type="number" id="editProductPrice">
-            </div>
-            
-            <div class="form-group">
-                <label for="editProductImage">Ссылка на изображение</label>
-                <input type="text" id="editProductImage">
-            </div>
-                    
-            <div class="form-group">
-                <label for="editProductDesc">Описание</label>
-                <input type="text" id="editProductDesc">
-            </div>
-            
-            <div class="form-group">
-                <label for="editProductInterest">Процентная ставка (%)</label>
-                <input type="number" id="editProductInterest" placeholder="Процент в месяц">
-            </div>
-            
-            <button class="save-btn" id="saveEditBtn">
-                <i class="fas fa-save"></i> Сохранить изменения
-            </button>
-        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Инициализация переменных
-            let products = [
-                {
-                    id: 1,
-                    name: 'Смартфон Samsung Galaxy',
-                    price: 54990,
-                    image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                    description: 'Флагманский смартфон с лучшей камерой',
-                    monthlyInterest: 11
-                },
-                {
-                    id: 2,
-                    name: 'Ноутбук ASUS ROG',
-                    price: 89990,
-                    image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                    description: 'Игровой ноутбук с мощной видеокартой',
-                    monthlyInterest: 11
-                },
-                {
-                    id: 3,
-                    name: 'Телевизор LG OLED',
-                    price: 129990,
-                    image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                    description: '4K OLED телевизор с идеальным изображением',
-                    monthlyInterest: 11
-                },
-                {
-                    id: 4,
-                    name: 'Холодильник Bosch',
-                    price: 75990,
-                    image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                    description: 'Двухкамерный холодильник с No Frost',
-                    monthlyInterest: 11
-                }
-            ];
-            
+            let products = [];
             let selectedProduct = null;
-            let adminSelectedProducts = [];
             let selectedTerm = 3;
-            let isAuthenticated = false;
-            
-            // Константы для авторизации
-            const CORRECT_LOGIN = 'admin';
-            const CORRECT_PASSWORD = 'admin123';
             
             // DOM элементы
             const productGrid = document.getElementById('productGrid');
-            const adminProductGrid = document.getElementById('adminProductGrid');
             const selectedProductInfo = document.getElementById('selectedProductInfo');
             const selectedProductName = document.getElementById('selectedProductName');
             const selectedProductPrice = document.getElementById('selectedProductPrice');
@@ -776,39 +401,12 @@
             const resultLoanTerm = document.getElementById('resultLoanTerm');
             const resultMonthlyPayment = document.getElementById('resultMonthlyPayment');
             const resultTotalPayment = document.getElementById('resultTotalPayment');
-            const refreshProductsBtn = document.getElementById('refreshProducts');
-            const deleteSelectedBtn = document.getElementById('deleteSelected');
-            const addProductBtn = document.getElementById('addProductBtn');
-            const editModal = document.getElementById('editModal');
-            const closeModalBtn = document.querySelector('.close-modal');
-            const saveEditBtn = document.getElementById('saveEditBtn');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const adminSection = document.getElementById('adminSection');
-            const adminPanel = document.getElementById('adminPanel');
-            const loginBtn = document.getElementById('loginBtn');
-            const authSection = document.getElementById('authSection');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const loginInput = document.getElementById('loginInput');
-            const passwordInput = document.getElementById('passwordInput');
-            const errorMessage = document.getElementById('errorMessage');
-            let currentProductToEdit = null;
             
-            // Проверка авторизации при загрузке
-            checkAuth();
-            
-            // Инициализация данных
-            renderProducts();
+            // Загружаем данные из CSV файла
+            loadProductsFromCSV();
             
             // Слушатели событий
             calculateBtn.addEventListener('click', calculateLoan);
-            refreshProductsBtn.addEventListener('click', refreshProducts);
-            deleteSelectedBtn.addEventListener('click', deleteSelectedProducts);
-            addProductBtn.addEventListener('click', addNewProduct);
-            closeModalBtn.addEventListener('click', () => editModal.style.display = 'none');
-            saveEditBtn.addEventListener('click', saveProductEdit);
-            loginBtn.addEventListener('click', login);
-            logoutBtn.addEventListener('click', logout);
             
             // Обработчики для выбора срока кредита
             termOptions.forEach(option => {
@@ -819,73 +417,84 @@
                 });
             });
             
-            // Табы в админке
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    tab.classList.add('active');
-                    const tabId = tab.getAttribute('data-tab');
-                    document.getElementById(`${tabId}Tab`).classList.add('active');
-                });
-            });
-            
-            // Функция проверки авторизации
-            function checkAuth() {
-                const savedAuth = localStorage.getItem('isAuthenticated');
-                if (savedAuth === 'true') {
-                    isAuthenticated = true;
-                    showAdminUI();
-                }
+            // Функция загрузки товаров из CSV
+            function loadProductsFromCSV() {
+                fetch('ONYX.csv')
+                    .then(response => response.text())
+                    .then(data => {
+                        // Парсим CSV данные
+                        const lines = data.split('\n');
+                        products = [];
+                        
+                        for (let i = 0; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (line) {
+                                const parts = line.split(';');
+                                if (parts.length >= 3) {
+                                    products.push({
+                                        id: i + 1,
+                                        name: parts[0].trim(),
+                                        price: parseFloat(parts[1].trim()),
+                                        image: parts[2].trim(),
+                                        monthlyInterest: 11 // Фиксированная ставка 11%
+                                    });
+                                }
+                            }
+                        }
+                        
+                        // Рендерим товары
+                        renderProducts();
+                    })
+                    .catch(error => {
+                        console.error('Ошибка загрузки CSV файла:', error);
+                        productGrid.innerHTML = '<p style="color: red; text-align: center;">Не удалось загрузить товары. Пожалуйста, проверьте наличие файла ONYX.csv</p>';
+                        
+                        // Если файл не загрузился, используем демо-данные
+                        products = [
+                            {
+                                id: 1,
+                                name: 'Смартфон Samsung Galaxy',
+                                price: 54990,
+                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 2,
+                                name: 'Ноутбук ASUS ROG',
+                                price: 89990,
+                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 3,
+                                name: 'Телевизор LG OLED',
+                                price: 129990,
+                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
+                                monthlyInterest: 11
+                            },
+                            {
+                                id: 4,
+                                name: 'Холодильник Bosch',
+                                price: 75990,
+                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
+                                monthlyInterest: 11
+                            }
+                        ];
+                        
+                        renderProducts();
+                    });
             }
             
-            // Функция входа
-            function login() {
-                const login = loginInput.value.trim();
-                const password = passwordInput.value.trim();
-                
-                if (login === CORRECT_LOGIN && password === CORRECT_PASSWORD) {
-                    isAuthenticated = true;
-                    localStorage.setItem('isAuthenticated', 'true');
-                    errorMessage.style.display = 'none';
-                    showAdminUI();
-                } else {
-                    errorMessage.style.display = 'block';
-                }
-            }
-            
-            // Функция выхода
-            function logout() {
-                isAuthenticated = false;
-                localStorage.removeItem('isAuthenticated');
-                hideAdminUI();
-                
-                // Очищаем поля ввода
-                loginInput.value = '';
-                passwordInput.value = '';
-            }
-            
-            // Показать UI администратора
-            function showAdminUI() {
-                authSection.style.display = 'none';
-                adminSection.style.display = 'block';
-                renderProducts();
-            }
-            
-            // Скрыть UI администратора
-            function hideAdminUI() {
-                authSection.style.display = 'block';
-                adminSection.style.display = 'none';
-            }
-
             // Функция рендеринга товаров
             function renderProducts() {
                 productGrid.innerHTML = '';
-                adminProductGrid.innerHTML = '';
+                
+                if (products.length === 0) {
+                    productGrid.innerHTML = '<p style="text-align: center; color: var(--light-text);">Нет доступных товаров</p>';
+                    return;
+                }
                 
                 products.forEach(product => {
-                    // Обычные карточки товаров для калькулятора
                     const productCard = document.createElement('div');
                     productCard.className = 'product-card';
                     productCard.dataset.id = product.id;
@@ -905,55 +514,6 @@
                     
                     productCard.addEventListener('click', () => selectProduct(product));
                     productGrid.appendChild(productCard);
-                    
-                    // Карточки товаров для админки
-                    if (isAuthenticated) {
-                        const adminCard = document.createElement('div');
-                        adminCard.className = 'product-card';
-                        adminCard.dataset.id = product.id;
-                        
-                        adminCard.innerHTML = `
-                            <div class="product-image">
-                                ${imgHtml}
-                            </div>
-                            <div class="product-name">${product.name}</div>
-                            <div class="product-price">${formatPrice(product.price)} ₽</div>
-                            <div style="margin-top: 5px; font-size: 0.8rem; color: #666;">Процент: ${product.monthlyInterest}% в мес.</div>
-                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                <button class="admin-btn" style="font-size: 0.8rem; padding: 5px 10px;" data-action="edit">
-                                    <i class="fas fa-edit"></i> Изменить
-                                </button>
-                                <button class="admin-btn danger" style="font-size: 0.8rem; padding: 5px 10px;" data-action="delete">
-                                    <i class="fas fa-trash"></i> Удалить
-                                </button>
-                                <input type="checkbox" data-id="${product.id}" style="align-self: center; margin-left: auto;">
-                            </div>
-                        `;
-                        
-                        // Обработчики событий для кнопок админки
-                        adminCard.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            openEditModal(product);
-                        });
-                        
-                        adminCard.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            deleteProduct(product.id);
-                        });
-                        
-                        adminCard.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
-                            const productId = parseInt(e.target.dataset.id);
-                            if (e.target.checked) {
-                                if (!adminSelectedProducts.includes(productId)) {
-                                    adminSelectedProducts.push(productId);
-                                }
-                            } else {
-                                adminSelectedProducts = adminSelectedProducts.filter(id => id !== productId);
-                            }
-                        });
-                        
-                        adminProductGrid.appendChild(adminCard);
-                    }
                 });
             }
             
@@ -1005,156 +565,5 @@
                 const monthlyPayment = (totalPayment - initialPayment) / loanTerm;
                 
                 // Обновляем UI с результатами
-                resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
-                resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽`;
-                resultLoanTerm.textContent = `${loanTerm} месяцев`;
-                resultMonthlyPayment.textContent = `${formatPrice(Math.round(monthlyPayment))} ₽`;
-                resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
-                
-                results.style.display = 'block';
-                
-                // Плавная прокрутка к результатам
-                results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-            
-            // Функции для работы с товарами в админке
-            function refreshProducts() {
-                renderProducts();
-                adminSelectedProducts = [];
-            }
-            
-            function deleteSelectedProducts() {
-                if (adminSelectedProducts.length === 0) {
-                    alert('Выберите товары для удаления');
-                    return;
-                }
-                
-                if (confirm(`Вы уверены, что хотите удалить ${adminSelectedProducts.length} товаров?`)) {
-                    products = products.filter(product => !adminSelectedProducts.includes(product.id));
-                    adminSelectedProducts = [];
-                    renderProducts();
-                    
-                    // Если удалили выбранный товар, сбрасываем выбор
-                    if (selectedProduct && adminSelectedProducts.includes(selectedProduct.id)) {
-                        selectedProduct = null;
-                        selectedProductInfo.style.display = 'none';
-                        results.style.display = 'none';
-                    }
-                }
-            }
-            
-            function deleteProduct(id) {
-                if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                    products = products.filter(product => product.id !== id);
-                    renderProducts();
-                    
-                    // Если удалили выбранный товар, сбрасываем выбор
-                    if (selectedProduct && selectedProduct.id === id) {
-                        selectedProduct = null;
-                        selectedProductInfo.style.display = 'none';
-                        results.style.display = 'none';
-                    }
-                }
-            }
-            
-            function addNewProduct() {
-                const name = document.getElementById('newProductName').value.trim();
-                const price = parseFloat(document.getElementById('newProductPrice').value);
-                const image = document.getElementById('newProductImage').value.trim();
-                const description = document.getElementById('newProductDesc').value.trim();
-                const monthlyInterest = parseFloat(document.getElementById('newProductInterest').value) || 11;
-                
-                if (!name || isNaN(price) || price <= 0) {
-                    alert('Пожалуйста, заполните название товара и укажите корректную цену');
-                    return;
-                }
-                
-                // Генерируем новый ID
-                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-                
-                const newProduct = {
-                    id: newId,
-                    name,
-                    price,
-                    image: image || null,
-                    description: description || null,
-                    monthlyInterest
-                };
-                
-                products.push(newProduct);
-                renderProducts();
-                
-                // Очищаем поля формы
-                document.getElementById('newProductName').value = '';
-                document.getElementById('newProductPrice').value = '';
-                document.getElementById('newProductImage').value = '';
-                document.getElementById('newProductDesc').value = '';
-                document.getElementById('newProductInterest').value = '';
-                
-                // Переключаем на вкладку с товарами
-                document.querySelector('.tab[data-tab="products"]').click();
-            }
-            
-            function openEditModal(product) {
-                currentProductToEdit = product;
-                
-                document.getElementById('editProductName').value = product.name;
-                document.getElementById('editProductPrice').value = product.price;
-                document.getElementById('editProductImage').value = product.image || '';
-                document.getElementById('editProductDesc').value = product.description || '';
-                document.getElementById('editProductInterest').value = product.monthlyInterest || 11;
-                
-                editModal.style.display = 'flex';
-            }
-            
-            function saveProductEdit() {
-                const name = document.getElementById('editProductName').value.trim();
-                const price = parseFloat(document.getElementById('editProductPrice').value);
-                const image = document.getElementById('editProductImage').value.trim();
-                const description = document.getElementById('editProductDesc').value.trim();
-                const monthlyInterest = parseFloat(document.getElementById('editProductInterest').value) || 11;
-                
-                if (!name || isNaN(price) || price <= 0) {
-                    alert('Пожалуйста, заполните название товара и укажите корректную цену');
-                    return;
-                }
-                
-                const index = products.findIndex(p => p.id === currentProductToEdit.id);
-                if (index !== -1) {
-                    products[index] = {
-                        ...products[index],
-                        name,
-                        price,
-                        image: image || null,
-                        description: description || null,
-                        monthlyInterest
-                    };
-                    
-                    renderProducts();
-                    
-                    // Если редактировали выбранный товар, обновляем его отображение
-                    if (selectedProduct && selectedProduct.id === currentProductToEdit.id) {
-                        selectProduct(products[index]);
-                    }
-                }
-                
-                editModal.style.display = 'none';
-                currentProductToEdit = null;
-            }
 
-            // Вспомогательные функции
-            function formatPrice(price) {
-                return new Intl.NumberFormat('ru-RU').format(Math.round(price));
-            }
-            
-            // Обработчик закрытия модального окна по клику вне его
-            window.addEventListener('click', (e) => {
-                if (e.target === editModal) {
-                    editModal.style.display = 'none';
-                    currentProductToEdit = null;
-                }
-            });
-        });
-    </script>
-</body>
 </html>
