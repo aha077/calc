@@ -402,6 +402,11 @@
             const resultMonthlyPayment = document.getElementById('resultMonthlyPayment');
             const resultTotalPayment = document.getElementById('resultTotalPayment');
             
+            // Пример данных из ONYX.csv (если файл не загрузится)
+            const exampleCSV = `iphone;100000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcacf098664f054fce/b29b8f777cf483f7916d2bfe10bb8241074f98e8f9a7ba4bf623d8efc23a98bf.jpg.webp
+samsung;80000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp
+xiaomi;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp`;
+            
             // Загружаем данные из CSV файла
             loadProductsFromCSV();
             
@@ -419,70 +424,43 @@
             
             // Функция загрузки товаров из CSV
             function loadProductsFromCSV() {
+                // Пытаемся загрузить реальный файл
                 fetch('ONYX.csv')
-                    .then(response => response.text())
-                    .then(data => {
-                        // Парсим CSV данные
-                        const lines = data.split('\n');
-                        products = [];
-                        
-                        for (let i = 0; i < lines.length; i++) {
-                            const line = lines[i].trim();
-                            if (line) {
-                                const parts = line.split(';');
-                                if (parts.length >= 3) {
-                                    products.push({
-                                        id: i + 1,
-                                        name: parts[0].trim(),
-                                        price: parseFloat(parts[1].trim()),
-                                        image: parts[2].trim(),
-                                        monthlyInterest: 11 // Фиксированная ставка 11%
-                                    });
-                                }
-                            }
-                        }
-                        
-                        // Рендерим товары
-                        renderProducts();
+                    .then(response => {
+                        if (!response.ok) throw new Error('Файл не найден');
+                        return response.text();
                     })
+                    .then(data => parseCSV(data))
                     .catch(error => {
                         console.error('Ошибка загрузки CSV файла:', error);
-                        productGrid.innerHTML = '<p style="color: red; text-align: center;">Не удалось загрузить товары. Пожалуйста, проверьте наличие файла ONYX.csv</p>';
-                        
-                        // Если файл не загрузился, используем демо-данные
-                        products = [
-                            {
-                                id: 1,
-                                name: 'Смартфон Samsung Galaxy',
-                                price: 54990,
-                                image: 'https://images.samsung.com/is/image/samsung/p6pim/ru/sm-s918bzcgser/gallery/ru-galaxy-s23-ultra-sm-s918-457691-sm-s918bzcgser-536866062?$650_519_PNG$',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 2,
-                                name: 'Ноутбук ASUS ROG',
-                                price: 89990,
-                                image: 'https://dlcdnwebimgs.asus.com/gain/4F1D7C3B-9C9D-4E1B-8A8D-5E8F5B5A5A5D/w1000/h732',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 3,
-                                name: 'Телевизор LG OLED',
-                                price: 129990,
-                                image: 'https://www.lg.com/ru/images/televisions/md07544261/gallery/1100_1.jpg',
-                                monthlyInterest: 11
-                            },
-                            {
-                                id: 4,
-                                name: 'Холодильник Bosch',
-                                price: 75990,
-                                image: 'https://media.btech.com/media/catalog/product/cache/c687aa7517cf01e65c009f6943c2b1e9/1/0/1000x1000_1_34.jpg',
-                                monthlyInterest: 11
-                            }
-                        ];
-                        
-                        renderProducts();
+                        // Используем пример данных, если файл не загрузился
+                        parseCSV(exampleCSV);
                     });
+            }
+            
+            // Функция парсинга CSV данных
+            function parseCSV(csvData) {
+                const lines = csvData.split('\n');
+                products = [];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line) {
+                        const parts = line.split(';');
+                        if (parts.length >= 3) {
+                            products.push({
+                                id: i + 1,
+                                name: parts[0].trim(),
+                                price: parseFloat(parts[1].trim()),
+                                image: parts[2].trim(),
+                                monthlyInterest: 11 // Фиксированная ставка 11%
+                            });
+                        }
+                    }
+                }
+                
+                // Рендерим товары
+                renderProducts();
             }
             
             // Функция рендеринга товаров
@@ -565,5 +543,20 @@
                 const monthlyPayment = (totalPayment - initialPayment) / loanTerm;
                 
                 // Обновляем UI с результатами
-
+                resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
+                resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽`;
+                resultLoanTerm.textContent = `${loanTerm} месяцев`;
+                resultMonthlyPayment.textContent = `${formatPrice(Math.round(monthlyPayment))} ₽`;
+                resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
+                
+                results.style.display = 'block';
+            }
+            
+            // Функция форматирования цены
+            function formatPrice(price) {
+                return new Intl.NumberFormat('ru-RU').format(price);
+            }
+        });
+    </script>
+</body>
 </html>
