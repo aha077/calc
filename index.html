@@ -318,7 +318,8 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: 6
+        00;
             color: var(--text-color);
             font-size: 0.9rem;
         }
@@ -451,6 +452,7 @@
                     <div class="input-group">
                         <label>Выбранный товар</label>
                         <div class="product-card selected" id="selectedProductDisplay">
+                            <div class="product-image" id="selectedProductImage"></div>
                             <div class="product-name" id="selectedProductName"></div>
                             <div class="product-price" id="selectedProductPrice"></div>
                         </div>
@@ -631,6 +633,7 @@
             const selectedProductInfo = document.getElementById('selectedProductInfo');
             const selectedProductName = document.getElementById('selectedProductName');
             const selectedProductPrice = document.getElementById('selectedProductPrice');
+            const selectedProductImage = document.getElementById('selectedProductImage');
             const selectedProductDisplay = document.getElementById('selectedProductDisplay');
             const initialPaymentInput = document.getElementById('initialPayment');
             const loanTermInput = document.getElementById('loanTerm');
@@ -774,6 +777,7 @@
                         </div>
                     `;
                     
+                    // Обработчики событий для кнопок админки
                     adminCard.querySelector('[data-action="edit"]').addEventListener('click', (e) => {
                         e.stopPropagation();
                         openEditModal(product);
@@ -808,8 +812,7 @@
                 selectedProductPrice.textContent = `${formatPrice(product.price)} ₽`;
                 
                 // Добавляем изображение, если оно есть
-                const imgContainer = selectedProductDisplay.querySelector('.product-image');
-                imgContainer.innerHTML = product.image ? 
+                selectedProductImage.innerHTML = product.image ? 
                     `<img src="${product.image}" alt="${product.name}" onerror="this.innerHTML='<i class=\"fas fa-box-open\"></i>'">` : 
                     '<i class="fas fa-box-open"></i>';
                 
@@ -817,11 +820,11 @@
                 results.style.display = 'none';
                 
                 // Убираем выделение у всех карточек и выделяем текущую
-                document.querySelectorAll('.product-card').forEach(card => {
+                document.querySelectorAll('.product-section .product-card').forEach(card => {
                     card.classList.remove('selected');
                 });
                 
-                const selectedCard = document.querySelector(`.product-card[data-id="${product.id}"]`);
+                const selectedCard = document.querySelector(`.product-section .product-card[data-id="${product.id}"]`);
                 if (selectedCard) selectedCard.classList.add('selected');
             }
             
@@ -843,8 +846,8 @@
                 
                 // Обработчик изменения значения слайдера
                 loanTermInput.addEventListener('input', () => {
-                    value = parseInt(loanTermInput.value);
-                    updateSlider();
+                    const newValue = parseInt(loanTermInput.value);
+                    updateSlider(newValue);
                 });
                 
                 // Обработчик кликов по треку слайдера
