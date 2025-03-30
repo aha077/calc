@@ -30,6 +30,8 @@
             color: var(--text-color);
             line-height: 1.6;
             padding: 20px;
+            padding-bottom: 100px; /* Added space for footer buttons */
+            position: relative;
         }
 
         .container {
@@ -342,6 +344,55 @@
             font-size: 0.9rem;
         }
 
+        /* NEW STYLES FOR FOOTER BUTTONS */
+        .footer-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+        }
+
+        .apply-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .apply-btn:hover {
+            background-color: #ff5722;
+            transform: translateY(-2px);
+        }
+
+        .chat-btn {
+            background-color: #25D366; /* WhatsApp green */
+            color: white;
+        }
+
+        .chat-btn:hover {
+            background-color: #128C7E;
+            transform: translateY(-2px);
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -357,6 +408,18 @@
             
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+
+            .footer-buttons {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 90%;
+                justify-content: center;
             }
         }
     </style>
@@ -451,6 +514,16 @@
         </div>
     </div>
 
+    <!-- NEW FOOTER BUTTONS -->
+    <div class="footer-buttons">
+        <button class="action-btn apply-btn" id="applyBtn">
+            <i class="fas fa-paper-plane"></i> Оставить заявку
+        </button>
+        <button class="action-btn chat-btn" id="chatBtn">
+            <i class="fab fa-whatsapp"></i> Чат с менеджером
+        </button>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Инициализация переменных
@@ -476,6 +549,8 @@
             const resultTotalPayment = document.getElementById('resultTotalPayment');
             const logoImage = document.getElementById('logoImage');
             const logoText = document.getElementById('logoText');
+            const applyBtn = document.getElementById('applyBtn');
+            const chatBtn = document.getElementById('chatBtn');
             
             // Функция для установки логотипа
             function setLogo(imageUrl) {
@@ -517,6 +592,25 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
                 });
             });
             
+            // Обработчик кнопки "Оставить заявку"
+            applyBtn.addEventListener('click', function() {
+                if (!selectedProduct) {
+                    alert('Пожалуйста, сначала выберите товар и рассчитайте стоимость');
+                    return;
+                }
+                
+                // Здесь можно добавить логику отправки заявки
+                alert(`Заявка на покупку "${selectedProduct.name}" отправлена!\nНаш менеджер свяжется с вами в ближайшее время.`);
+            });
+            
+            // Обработчик кнопки чата - открывает WhatsApp с номером 79287246454
+            chatBtn.addEventListener('click', function() {
+                const phoneNumber = '79287246454';
+                const message = 'Здравствуйте, у меня вопрос по рассрочке';
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            });
+            
             // Функция загрузки товаров из CSV
             function loadProductsFromCSV() {
                 // Пытаемся загрузить реальный файл
@@ -548,7 +642,7 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
                                 name: parts[0].trim(),
                                 price: parseFloat(parts[1].trim()),
                                 image: parts[2].trim(),
-                                monthlyInterest: parts.length >= 4 ? parseFloat(parts[3].trim()) : 11 // Берем процент из CSV или 11% по умолчанию
+                                monthlyInterest: parts.length >= 4 ? parseFloat(parts[3].trim()) : 11
                             });
                         }
                     }
@@ -572,7 +666,6 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
                     productCard.className = 'product-card';
                     productCard.dataset.id = product.id;
                     
-                    // Исправляем отображение изображений (убраны лишние символы)
                     const imgHtml = product.image ? 
                         `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=fas fa-box-open></i>'">` : 
                         '<i class=fas fa-box-open></i>';
@@ -594,22 +687,18 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
             function selectProduct(product) {
                 selectedProduct = product;
                 
-                // Обновляем UI выбранного товара
                 selectedProductName.textContent = product.name;
                 selectedProductPrice.textContent = `${formatPrice(product.price)} ₽`;
                 
-                // Обрабатываем изображение товара (убраны лишние символы)
                 selectedProductImage.innerHTML = product.image ? 
                     `<img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.innerHTML='<i class=fas fa-box-open></i>'">` : 
                     '<i class=fas fa-box-open></i>';
                 
-                // Сначала скрываем первоначальный взнос, так как он будет рассчитан после расчета общей суммы
                 initialPaymentDisplay.textContent = 'Будет рассчитан';
                 
                 selectedProductInfo.style.display = 'block';
                 results.style.display = 'none';
                 
-                // Убираем выделение у всех карточек и выделяем текущую
                 document.querySelectorAll('.product-section .product-card').forEach(card => {
                     card.classList.remove('selected');
                 });
@@ -627,25 +716,18 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
                 
                 const productPrice = selectedProduct.price;
                 const loanTerm = selectedTerm;
-                const monthlyInterestRate = (selectedProduct.monthlyInterest || 11) / 100; // Процент в месяц
+                const monthlyInterestRate = (selectedProduct.monthlyInterest || 11) / 100;
                 
-                // Новая формула расчета: общая сумма = цена товара + (цена товара * процент * срок в месяцах)
                 const totalPayment = productPrice + (productPrice * monthlyInterestRate * loanTerm);
-                
-                // Первоначальный взнос = 18% от общей сумма выплат
                 const initialPayment = Math.round(totalPayment * 0.18);
-                
-                // Еженедельный платеж = (общая сумма - первоначальный взнос) / (срок * 4)
                 const weeklyPayment = (totalPayment - initialPayment) / (loanTerm * 4);
                 
-                // Обновляем UI с результатами
                 resultProductPrice.textContent = `${formatPrice(productPrice)} ₽`;
                 resultInitialPayment.textContent = `${formatPrice(initialPayment)} ₽`;
                 resultLoanTerm.textContent = `${loanTerm} месяцев`;
                 resultMonthlyPayment.textContent = `${formatPrice(Math.round(weeklyPayment))} ₽`;
                 resultTotalPayment.textContent = `${formatPrice(Math.round(totalPayment))} ₽`;
                 
-                // Обновляем первоначальный взнос в фиксированной информации
                 initialPaymentDisplay.textContent = `${formatPrice(initialPayment)} ₽`;
                 
                 results.style.display = 'block';
