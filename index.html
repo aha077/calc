@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a6bff;
-            --secondary-color: #f5f7ff;
+            --primary-color: #074998;
+            --secondary-color: #ffffff;
             --accent-color: #ff7043;
-            --text-color: #333;
-            --light-text: #666;
+            --text-color: #ffffff;
+            --light-text: #f0f0f0;
             --border-color: #e0e0e0;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             --border-radius: 10px;
+            --card-bg: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -25,7 +26,7 @@
         }
 
         body {
-            background-color: var(--secondary-color);
+            background-color: var(--primary-color);
             color: var(--text-color);
             line-height: 1.6;
             padding: 20px;
@@ -42,7 +43,7 @@
         }
 
         .header h1 {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             margin-bottom: 10px;
             font-size: 2.2rem;
             display: flex;
@@ -71,26 +72,30 @@
         .product-section {
             flex: 3;
             min-width: 300px;
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .calculation-section {
             flex: 1;
             min-width: 250px;
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .section-title {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--primary-color);
+            color: var(--secondary-color);
             margin-bottom: 15px;
             font-size: 1.1rem;
         }
@@ -114,20 +119,20 @@
         }
 
         .product-grid::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .product-grid::-webkit-scrollbar-thumb {
-            background: #888;
+            background: rgba(255, 255, 255, 0.3);
             border-radius: 5px;
         }
 
         .product-grid::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: rgba(255, 255, 255, 0.5);
         }
 
         .product-card {
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--border-radius);
             padding: 10px;
             cursor: pointer;
@@ -137,17 +142,18 @@
             height: 150px;
             display: flex;
             flex-direction: column;
+            background-color: var(--card-bg);
         }
 
         .product-card:hover {
             transform: translateY(-3px);
-            box-shadow: var(--shadow);
-            border-color: var(--primary-color);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: var(--secondary-color);
         }
 
         .product-card.selected {
-            border-color: var(--primary-color);
-            background-color: rgba(74, 107, 255, 0.05);
+            border-color: var(--secondary-color);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .product-image {
@@ -156,11 +162,11 @@
             object-fit: contain;
             margin-bottom: 8px;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ccc;
+            color: rgba(255, 255, 255, 0.5);
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -185,7 +191,7 @@
         }
 
         .product-price {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             font-weight: 700;
             font-size: 0.9rem;
             margin-top: auto;
@@ -206,46 +212,53 @@
         .input-group input, .input-group select {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: var(--border-radius);
             font-size: 0.9rem;
             transition: border 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
         }
 
         .input-group input:focus, .input-group select:focus {
-            border-color: var(--primary-color);
+            border-color: var(--secondary-color);
             outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .calculate-btn {
             width: 100%;
             padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
             border: none;
             border-radius: var(--border-radius);
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             margin-top: 10px;
         }
 
         .calculate-btn:hover {
-            background-color: #3a5bd9;
+            background-color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
         }
 
         .results {
             margin-top: 20px;
             padding: 15px;
-            background-color: rgba(74, 107, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
             font-size: 0.9rem;
         }
 
         .results-title {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             margin-bottom: 12px;
             font-size: 1rem;
             display: flex;
@@ -258,7 +271,7 @@
             justify-content: space-between;
             margin-bottom: 8px;
             padding-bottom: 8px;
-            border-bottom: 1px dashed var(--border-color);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
         }
 
         .result-item:last-child {
@@ -276,7 +289,7 @@
         }
 
         .result-value.total {
-            color: var(--primary-color);
+            color: var(--secondary-color);
             font-size: 1rem;
         }
 
@@ -291,7 +304,7 @@
             flex: 1;
             min-width: 60px;
             padding: 8px;
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: var(--border-radius);
             text-align: center;
             cursor: pointer;
@@ -300,16 +313,16 @@
         }
 
         .term-option.selected {
-            border-color: var(--primary-color);
-            background-color: rgba(74, 107, 255, 0.05);
+            border-color: var(--secondary-color);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .fixed-payment-info {
-            background-color: rgba(74, 107, 255, 0.05);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
             padding: 12px;
             margin-bottom: 15px;
-            border-left: 4px solid var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
             font-size: 0.9rem;
         }
 
@@ -317,9 +330,9 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(74, 107, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--primary-color);
+            border-top-color: var(--secondary-color);
             animation: spin 1s ease-in-out infinite;
             margin: 20px auto;
             grid-column: 1 / -1;
@@ -482,7 +495,7 @@ samsung galaxy s22;80000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1
 xiaomi redmi note 10;50000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp;11
 macbook air m1;120000;https://c.dns-shop.ru/thumb/st4/fit/500/500/85b88b9f53eb7017f82d319d27b55a5f/edf9e7ab2bb14d2e3e8b6e9b2c8a1f8342b0c8da3c9cc29e19c3a8d0a2e7d60.jpg.webp;11
 ipad pro;90000;https://c.dns-shop.ru/thumb/st1/fit/500/500/1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p/9876543210fedcba9876543210fedcba9876543210fedcba9876543210fedcba.jpg.webp;11
-samsung tablet;40000;https://c.dns-shop.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp;11
+samsung tablet;40000;https://c.dns-shork.ru/thumb/st1/fit/500/500/0a7a1e6c8c1d7e2f3f4e5d6c7b8a9f0e/1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef.jpg.webp;11
 apple watch;35000;https://c.dns-shop.ru/thumb/st4/fit/500/500/85b88b9f53eb7017f82d319d27b55a5f/edf9e7ab2bb14d2e3e8b6e9b2c8a1f8342b0c8da3c9cc29e19c3a8d0a2e7d60.jpg.webp;11
 airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcacf098664f054fce/b29b8f777cf483f7916d2bfe10bb8241074f98e8f9a7ba4bf623d8efc23a98bf.jpg.webp;11`;
             
@@ -619,7 +632,7 @@ airpods pro;25000;https://c.dns-shop.ru/thumb/st1/fit/500/500/20a91510ba50a0dcac
                 // Новая формула расчета: общая сумма = цена товара + (цена товара * процент * срок в месяцах)
                 const totalPayment = productPrice + (productPrice * monthlyInterestRate * loanTerm);
                 
-                // Первоначальный взнос = 18% от общей суммы выплат
+                // Первоначальный взнос = 18% от общей сумма выплат
                 const initialPayment = Math.round(totalPayment * 0.18);
                 
                 // Еженедельный платеж = (общая сумма - первоначальный взнос) / (срок * 4)
