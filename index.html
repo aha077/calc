@@ -210,13 +210,13 @@
                 
                 // Calculate interest based on months
                 let interestPercent;
-                if (months === 3) interestPercent = 22;
-                else if (months === 6) interestPercent = 44;
-                else if (months === 9) interestPercent = 88;
-                else if (months === 12) interestPercent = 110;
+                if (months === 3) interestPercent = 22.5;
+                else if (months === 6) interestPercent = 45;
+                else if (months === 9) interestPercent = 67.5;
+                else if (months === 12) interestPercent = 90;
                 
                 const interestAmount = currentPrice * (interestPercent / 100);
-                const monthly = (remaining + interestAmount) / months;
+                const monthly = (remaining / months) + (interestAmount / months);
                 const total = initial + remaining + interestAmount;
                 
                 monthlyPayment.textContent = formatPrice(monthly);
@@ -246,7 +246,10 @@
             // Обработчик кнопки оформления
             applyButton.addEventListener('click', function() {
                 if (currentPrice > 0) {
-                    alert('Заявка на рассрочку успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.');
+                    const selectedProduct = productSelect.options[productSelect.selectedIndex].text.split(' - ')[0];
+                    const whatsappMessage = `Здравствуйте, хотел бы оформить у вас рассрочку на товар: ${selectedProduct}`;
+                    const encodedMessage = encodeURIComponent(whatsappMessage);
+                    window.open(`https://wa.me/79054366966?text=${encodedMessage}`, '_blank');
                 }
             });
         });
