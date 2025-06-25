@@ -146,9 +146,11 @@
             try {
                 const response = await fetch('onix.csv');
                 const csvData = await response.text();
-                products = csvData.split('\n').slice(1).map(line => {
-                    const [name, price] = line.split(',');
-                    return { name, price: parseFloat(price) };
+                products = csvData.split('\n').filter(line => line.trim() !== '').map(line => {
+                    const [name, price] = line.split(';');
+                    // Replace comma with dot for proper float parsing
+                    const numericPrice = parseFloat(price.replace(',', '.'));
+                    return { name, price: numericPrice };
                 });
                 
                 // Populate product select
@@ -227,7 +229,7 @@
                     style: 'decimal',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
-                }).format(price) + ' ₽';
+                }).format(price).replace('.', ',') + ' ₽';
             }
             
             // Функция для правильного склонения слова "месяц"
