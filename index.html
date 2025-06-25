@@ -68,11 +68,6 @@
             <div class="relative">
                 <select id="product" class="block appearance-none w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 transition duration-200">
                     <option value="">Выберите товар</option>
-                    <option value="10400">AirPods 4 - 100 000,00 руб</option>
-                    <option value="25990">iPhone 13 - 25 990,00 руб</option>
-                    <option value="18990">iPad Air - 18 990,00 руб</option>
-                    <option value="34990">MacBook Air - 34 990,00 руб</option>
-                    <option value="8990">Apple Watch SE - 8 990,00 руб</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <i class="fas fa-chevron-down"></i>
@@ -142,9 +137,26 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const productSelect = document.getElementById('product');
             const productPrice = document.getElementById('productPrice');
+            
+            // Load products from CSV
+            let products = [];
+            try {
+                const response = await fetch('onix.csv');
+                const csvData = await response.text();
+                products = csvData.split('\n').slice(1).map(line => {
+                    const [name, price] = line.split(',');
+                    return { name, price: parseFloat(price) };
+                });
+                
+                // Populate product select
+                productSelect.innerHTML = '<option value="">Выберите товар</option>' + 
+                    products.map(p => `<option value="${p.price}">${p.name} - ${formatPrice(p.price)}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
             const initialPayment = document.getElementById('initialPayment');
             const installmentPeriod = document.getElementById('installmentPeriod');
             const selectedPeriod = document.getElementById('selectedPeriod');
@@ -194,13 +206,16 @@
                 const initial = currentPrice * 0.3;
                 const remaining = currentPrice - initial;
                 
-                // Проценты за весь срок (22% годовых)
-                const annualRate = 0.22;
-                const monthlyRate = annualRate / 12;
-                const interest = remaining * monthlyRate * months;
+                // Calculate interest based on months
+                let interestPercent;
+                if (months === 3) interestPercent = 22;
+                else if (months === 6) interestPercent = 44;
+                else if (months === 9) interestPercent = 88;
+                else if (months === 12) interestPercent = 110;
                 
-                const monthly = (remaining + interest) / months;
-                const total = initial + remaining + interest;
+                const interestAmount = currentPrice * (interestPercent / 100);
+                const monthly = (remaining + interestAmount) / months;
+                const total = initial + remaining + interestAmount;
                 
                 monthlyPayment.textContent = formatPrice(monthly);
                 totalCost.textContent = formatPrice(total);
